@@ -1,0 +1,4137 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#667eea">
+    <meta name="description" content="A comedy puzzle game where you can't trust the instructions!">
+    <title>Wrong Button</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="icon-512.png">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+/* ========================================
+   WRONG BUTTON - FAKE OS THEME
+   ======================================== */
+
+/* Reset & Base */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+}
+
+:root {
+    --bg-primary: #FFFFFF;
+    --bg-secondary: #F5F5F7;
+    --text-primary: #111111;
+    --text-secondary: #666666;
+    --accent-blue: #007AFF;
+    --accent-red: #FF3B30;
+    --accent-green: #34C759;
+    --accent-orange: #FF9500;
+    --accent-purple: #AF52DE;
+    --border-color: #E5E5EA;
+    --shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    --shadow-heavy: 0 8px 40px rgba(0, 0, 0, 0.15);
+}
+
+html, body {
+    height: 100%;
+    overflow: hidden;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+/* Screens */
+.screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: none;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.screen.active {
+    display: flex;
+    opacity: 1;
+}
+
+/* ========================================
+   SPLASH SCREEN
+   ======================================== */
+#splash-screen {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    justify-content: center;
+    align-items: center;
+}
+
+.splash-content {
+    text-align: center;
+    color: white;
+}
+
+.splash-logo {
+    margin-bottom: 40px;
+}
+
+.logo-icon {
+    font-size: 80px;
+    display: block;
+    margin-bottom: 20px;
+    animation: bounce 1s ease infinite;
+}
+
+@keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+
+.splash-logo h1 {
+    font-size: 36px;
+    font-weight: 700;
+    margin-bottom: 10px;
+}
+
+.version {
+    font-size: 14px;
+    opacity: 0.8;
+}
+
+.loading-container {
+    width: 200px;
+    margin: 0 auto;
+}
+
+.loading-bar {
+    height: 4px;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 2px;
+    overflow: hidden;
+    margin-bottom: 15px;
+}
+
+.loading-fill {
+    height: 100%;
+    background: white;
+    width: 0%;
+    border-radius: 2px;
+    animation: loading 2s ease forwards;
+}
+
+@keyframes loading {
+    0% { width: 0%; }
+    50% { width: 70%; }
+    100% { width: 100%; }
+}
+
+.loading-text {
+    font-size: 12px;
+    opacity: 0.8;
+}
+
+/* ========================================
+   OS WINDOW STYLE
+   ======================================== */
+.os-window {
+    width: 100%;
+    height: 100%;
+    background: var(--bg-primary);
+    display: flex;
+    flex-direction: column;
+}
+
+.os-titlebar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    background: var(--bg-secondary);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.titlebar-text {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.titlebar-buttons {
+    display: flex;
+    gap: 8px;
+}
+
+.titlebar-buttons span {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    cursor: pointer;
+}
+
+.btn-minimize { background: var(--accent-orange); }
+.btn-maximize { background: var(--accent-green); }
+.btn-close { background: var(--accent-red); }
+.btn-back {
+    background: var(--accent-blue);
+    color: white;
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    font-size: 16px;
+}
+
+.os-content {
+    flex: 1;
+    padding: 20px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* ========================================
+   MAIN MENU
+   ======================================== */
+#main-menu {
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+.menu-logo {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.logo-big {
+    font-size: 100px;
+    display: block;
+    margin-bottom: 15px;
+}
+
+.menu-logo h2 {
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: 2px;
+}
+
+.tagline {
+    font-size: 14px;
+    color: var(--text-secondary);
+    margin-top: 8px;
+}
+
+.menu-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    max-width: 300px;
+    margin: 0 auto;
+}
+
+.menu-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 16px 24px;
+    background: var(--bg-secondary);
+    border: 2px solid var(--border-color);
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text-primary);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.menu-btn:active {
+    transform: scale(0.95);
+}
+
+.menu-btn.primary {
+    background: var(--accent-blue);
+    border-color: var(--accent-blue);
+    color: white;
+}
+
+.menu-btn:hover {
+    box-shadow: var(--shadow);
+}
+
+.btn-icon {
+    font-size: 20px;
+}
+
+.menu-footer {
+    text-align: center;
+    margin-top: 30px;
+}
+
+.menu-footer p {
+    font-size: 13px;
+    color: var(--text-secondary);
+    font-style: italic;
+}
+
+/* ========================================
+   LEVEL SELECT
+   ======================================== */
+.level-categories {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 20px;
+    overflow-x: auto;
+    padding-bottom: 10px;
+    -webkit-overflow-scrolling: touch;
+}
+
+.category-btn {
+    flex-shrink: 0;
+    padding: 10px 16px;
+    background: var(--bg-secondary);
+    border: 2px solid var(--border-color);
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.category-btn.active {
+    background: var(--accent-blue);
+    border-color: var(--accent-blue);
+    color: white;
+}
+
+.levels-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 10px;
+}
+
+.level-item {
+    aspect-ratio: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg-secondary);
+    border: 2px solid var(--border-color);
+    border-radius: 12px;
+    font-size: 18px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+}
+
+.level-item:active {
+    transform: scale(0.9);
+}
+
+.level-item.locked {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.level-item.completed {
+    background: var(--accent-green);
+    border-color: var(--accent-green);
+    color: white;
+}
+
+.level-item.current {
+    background: var(--accent-blue);
+    border-color: var(--accent-blue);
+    color: white;
+    animation: pulse 2s ease infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(0, 122, 255, 0.4); }
+    50% { box-shadow: 0 0 0 10px rgba(0, 122, 255, 0); }
+}
+
+.level-item .level-status {
+    font-size: 10px;
+    margin-top: 4px;
+}
+
+/* ========================================
+   GAMEPLAY SCREEN
+   ======================================== */
+#gameplay {
+    background: var(--bg-primary);
+}
+
+.game-container {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.game-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.level-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.level-number {
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.level-category {
+    font-size: 12px;
+    color: var(--text-secondary);
+}
+
+.pause-btn {
+    width: 44px;
+    height: 44px;
+    background: var(--bg-secondary);
+    border: none;
+    border-radius: 10px;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+.game-area {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    position: relative;
+}
+
+.instruction-container {
+    margin-bottom: 40px;
+    text-align: center;
+}
+
+.instruction {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--text-primary);
+    line-height: 1.4;
+    animation: fadeInUp 0.5s ease;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.game-button-container {
+    position: relative;
+}
+
+.game-button {
+    width: 180px;
+    height: 180px;
+    background: var(--accent-blue);
+    border: none;
+    border-radius: 50%;
+    font-size: 18px;
+    font-weight: 700;
+    color: white;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    box-shadow: 0 8px 30px rgba(0, 122, 255, 0.4);
+    animation: buttonAppear 0.3s ease;
+}
+
+@keyframes buttonAppear {
+    from {
+        transform: scale(0);
+        opacity: 0;
+    }
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.game-button:active {
+    transform: scale(0.9);
+}
+
+.game-button.success {
+    background: var(--accent-green);
+    box-shadow: 0 8px 30px rgba(52, 199, 89, 0.4);
+}
+
+.game-button.danger {
+    background: var(--accent-red);
+    box-shadow: 0 8px 30px rgba(255, 59, 48, 0.4);
+}
+
+.game-button.warning {
+    background: var(--accent-orange);
+    box-shadow: 0 8px 30px rgba(255, 149, 0, 0.4);
+}
+
+.game-button.small {
+    width: 120px;
+    height: 120px;
+    font-size: 14px;
+}
+
+.game-button.large {
+    width: 240px;
+    height: 240px;
+    font-size: 22px;
+}
+
+/* Dialogue Area */
+.dialogue-area {
+    padding: 16px;
+    background: var(--bg-secondary);
+    border-top: 1px solid var(--border-color);
+}
+
+.dialogue-box {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+}
+
+.dialogue-avatar {
+    font-size: 32px;
+}
+
+.dialogue-text {
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--text-primary);
+}
+
+/* Typewriter Effect */
+.typewriter {
+    overflow: hidden;
+    border-right: 2px solid var(--text-primary);
+    animation: blink 0.7s step-end infinite;
+}
+
+@keyframes blink {
+    50% { border-color: transparent; }
+}
+
+/* ========================================
+   FAKE ELEMENTS
+   ======================================== */
+.fake-element {
+    position: absolute;
+    z-index: 100;
+}
+
+#fake-popup {
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.popup-content {
+    background: white;
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: var(--shadow-heavy);
+    text-align: center;
+    min-width: 280px;
+    animation: popIn 0.3s ease;
+}
+
+@keyframes popIn {
+    from {
+        transform: scale(0.8);
+        opacity: 0;
+    }
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.popup-content h3 {
+    font-size: 18px;
+    margin-bottom: 12px;
+    color: var(--accent-red);
+}
+
+.popup-content p {
+    font-size: 14px;
+    color: var(--text-secondary);
+    margin-bottom: 20px;
+}
+
+.popup-btn {
+    padding: 10px 30px;
+    background: var(--accent-blue);
+    border: none;
+    border-radius: 8px;
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+#fake-notification {
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: calc(100% - 40px);
+    max-width: 360px;
+}
+
+.notification-content {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: white;
+    padding: 16px;
+    border-radius: 16px;
+    box-shadow: var(--shadow-heavy);
+    animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+    from {
+        transform: translateY(-100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.notif-icon {
+    font-size: 28px;
+}
+
+.notif-title {
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.notif-message {
+    font-size: 12px;
+    color: var(--text-secondary);
+}
+
+/* ========================================
+   MODALS
+   ======================================== */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.modal-content {
+    background: white;
+    border-radius: 20px;
+    padding: 32px;
+    text-align: center;
+    max-width: 320px;
+    width: 90%;
+    animation: popIn 0.3s ease;
+}
+
+.modal-content h2 {
+    font-size: 24px;
+    margin-bottom: 12px;
+}
+
+.modal-content p {
+    font-size: 14px;
+    color: var(--text-secondary);
+    margin-bottom: 24px;
+}
+
+.modal-content .menu-btn {
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+.modal-content.success h2 {
+    color: var(--accent-green);
+}
+
+.modal-content.failure h2 {
+    color: var(--accent-red);
+}
+
+.stars {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 24px;
+}
+
+.star {
+    font-size: 32px;
+    opacity: 0.3;
+}
+
+.star.earned {
+    opacity: 1;
+    animation: starPop 0.5s ease;
+}
+
+@keyframes starPop {
+    0% { transform: scale(0); }
+    50% { transform: scale(1.3); }
+    100% { transform: scale(1); }
+}
+
+/* ========================================
+   ERROR POPUP
+   ======================================== */
+.error-window {
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: var(--shadow-heavy);
+    min-width: 300px;
+    animation: popIn 0.3s ease;
+}
+
+.error-titlebar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 16px;
+    background: var(--accent-orange);
+    color: white;
+}
+
+.error-icon {
+    font-size: 18px;
+}
+
+.error-title {
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.error-content {
+    padding: 24px 16px;
+}
+
+.error-message {
+    font-size: 14px;
+    color: var(--text-primary);
+    line-height: 1.5;
+}
+
+.error-buttons {
+    display: flex;
+    border-top: 1px solid var(--border-color);
+}
+
+.error-btn {
+    flex: 1;
+    padding: 12px;
+    background: none;
+    border: none;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--accent-blue);
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.error-btn:not(:last-child) {
+    border-right: 1px solid var(--border-color);
+}
+
+.error-btn:active {
+    background: var(--bg-secondary);
+}
+
+/* ========================================
+   CRASH SCREEN
+   ======================================== */
+.crash-content {
+    text-align: center;
+    color: white;
+}
+
+.crash-icon {
+    font-size: 64px;
+    margin-bottom: 20px;
+}
+
+.crash-title {
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 12px;
+}
+
+.crash-message {
+    font-size: 14px;
+    opacity: 0.9;
+    margin-bottom: 24px;
+}
+
+.crash-progress {
+    width: 200px;
+    height: 8px;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 4px;
+    margin: 0 auto;
+    overflow: hidden;
+}
+
+.crash-progress-fill {
+    height: 100%;
+    background: white;
+    width: 0%;
+    border-radius: 4px;
+    transition: width 0.3s ease;
+}
+
+/* ========================================
+   ACHIEVEMENT TOAST
+   ======================================== */
+.achievement-toast {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 2000;
+    animation: slideDown 0.5s ease;
+}
+
+.achievement-content {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: linear-gradient(135deg, #FFD700, #FFA500);
+    padding: 16px 24px;
+    border-radius: 16px;
+    box-shadow: 0 8px 30px rgba(255, 215, 0, 0.4);
+}
+
+.achievement-icon {
+    font-size: 32px;
+}
+
+.achievement-title {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    opacity: 0.9;
+}
+
+.achievement-name {
+    font-size: 16px;
+    font-weight: 700;
+}
+
+/* ========================================
+   SETTINGS
+   ======================================== */
+.settings-list {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.setting-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px;
+    background: var(--bg-secondary);
+    border-radius: 12px;
+}
+
+.setting-label {
+    font-size: 15px;
+    font-weight: 500;
+}
+
+.toggle {
+    position: relative;
+    width: 50px;
+    height: 28px;
+}
+
+.toggle input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.toggle-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: #ccc;
+    border-radius: 28px;
+    transition: 0.3s;
+}
+
+.toggle-slider:before {
+    position: absolute;
+    content: "";
+    height: 22px;
+    width: 22px;
+    left: 3px;
+    bottom: 3px;
+    background: white;
+    border-radius: 50%;
+    transition: 0.3s;
+}
+
+.toggle input:checked + .toggle-slider {
+    background: var(--accent-green);
+}
+
+.toggle input:checked + .toggle-slider:before {
+    transform: translateX(22px);
+}
+
+.setting-select {
+    padding: 8px 12px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    font-size: 14px;
+    background: white;
+}
+
+.danger-btn {
+    width: 100%;
+    padding: 12px;
+    background: var(--accent-red);
+    border: none;
+    border-radius: 8px;
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+/* ========================================
+   COLLECTIONS
+   ======================================== */
+.collection-tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 20px;
+}
+
+.tab-btn {
+    flex: 1;
+    padding: 10px;
+    background: var(--bg-secondary);
+    border: none;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.tab-btn.active {
+    background: var(--accent-blue);
+    color: white;
+}
+
+.collection-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.collection-item {
+    padding: 12px;
+    background: var(--bg-secondary);
+    border-radius: 8px;
+    font-size: 13px;
+    line-height: 1.4;
+}
+
+.collection-item.locked {
+    opacity: 0.5;
+    font-style: italic;
+}
+
+/* ========================================
+   ACHIEVEMENTS
+   ======================================== */
+.achievements-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.achievement-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px;
+    background: var(--bg-secondary);
+    border-radius: 12px;
+}
+
+.achievement-item.locked {
+    opacity: 0.5;
+}
+
+.achievement-item-icon {
+    font-size: 32px;
+}
+
+.achievement-item-info h4 {
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.achievement-item-info p {
+    font-size: 12px;
+    color: var(--text-secondary);
+}
+
+/* ========================================
+   SCREEN SHAKE
+   ======================================== */
+.shake {
+    animation: shake 0.5s ease;
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+    20%, 40%, 60%, 80% { transform: translateX(5px); }
+}
+
+/* ========================================
+   GLITCH EFFECT
+   ======================================== */
+.glitch {
+    animation: glitch 0.3s ease;
+}
+
+@keyframes glitch {
+    0% { transform: translate(0); filter: hue-rotate(0deg); }
+    20% { transform: translate(-2px, 2px); filter: hue-rotate(90deg); }
+    40% { transform: translate(-2px, -2px); filter: hue-rotate(180deg); }
+    60% { transform: translate(2px, 2px); filter: hue-rotate(270deg); }
+    80% { transform: translate(2px, -2px); filter: hue-rotate(360deg); }
+    100% { transform: translate(0); filter: hue-rotate(0deg); }
+}
+
+/* ========================================
+   RESPONSIVE
+   ======================================== */
+@media (max-width: 380px) {
+    .game-button {
+        width: 150px;
+        height: 150px;
+        font-size: 16px;
+    }
+    
+    .instruction {
+        font-size: 20px;
+    }
+}
+
+@media (min-width: 768px) {
+    .os-window {
+        max-width: 480px;
+        margin: 0 auto;
+        height: 100%;
+    }
+    
+    .levels-grid {
+        grid-template-columns: repeat(5, 1fr);
+    }
+}
+
+    </style>
+</head>
+<body>
+    <!-- Splash Screen -->
+    <div id="splash-screen" class="screen active">
+        <div class="splash-content">
+            <div class="splash-logo">
+                <span class="logo-icon">🎮</span>
+                <h1>Wrong Button</h1>
+                <p class="version">v1.0.0</p>
+            </div>
+            <div class="loading-container">
+                <div class="loading-bar">
+                    <div class="loading-fill"></div>
+                </div>
+                <p class="loading-text">Loading regrets...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Menu -->
+    <div id="main-menu" class="screen">
+        <div class="os-window">
+            <div class="os-titlebar">
+                <span class="titlebar-text">Wrong Button OS v1.0</span>
+                <div class="titlebar-buttons">
+                    <span class="btn-minimize">—</span>
+                    <span class="btn-maximize">□</span>
+                    <span class="btn-close">×</span>
+                </div>
+            </div>
+            <div class="os-content">
+                <div class="menu-logo">
+                    <span class="logo-big">🎮</span>
+                    <h2>WRONG BUTTON</h2>
+                    <p class="tagline">Trust No One. Not Even The Instructions.</p>
+                </div>
+                <div class="menu-buttons">
+                    <button class="menu-btn primary" id="btn-play">
+                        <span class="btn-icon">▶️</span>
+                        <span class="btn-text">PLAY GAME</span>
+                    </button>
+                    <button class="menu-btn" id="btn-achievements">
+                        <span class="btn-icon">🏆</span>
+                        <span class="btn-text">ACHIEVEMENTS</span>
+                    </button>
+                    <button class="menu-btn" id="btn-collections">
+                        <span class="btn-icon">📁</span>
+                        <span class="btn-text">COLLECTIONS</span>
+                    </button>
+                    <button class="menu-btn" id="btn-settings">
+                        <span class="btn-icon">⚙️</span>
+                        <span class="btn-text">SETTINGS</span>
+                    </button>
+                </div>
+                <div class="menu-footer">
+                    <p id="menu-quote">"Welcome back, Victim #42"</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Level Select -->
+    <div id="level-select" class="screen">
+        <div class="os-window">
+            <div class="os-titlebar">
+                <span class="titlebar-text">Select Level</span>
+                <div class="titlebar-buttons">
+                    <span class="btn-back" id="btn-back-menu">←</span>
+                </div>
+            </div>
+            <div class="os-content">
+                <div class="level-categories" id="level-categories"></div>
+                <div class="levels-grid" id="levels-grid"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Gameplay Screen -->
+    <div id="gameplay" class="screen">
+        <div class="game-container">
+            <div class="game-header">
+                <div class="level-info">
+                    <span class="level-number" id="level-number">Level 1</span>
+                    <span class="level-category" id="level-category">Button Basics</span>
+                </div>
+                <button class="pause-btn" id="btn-pause">⏸️</button>
+            </div>
+            <div class="game-area">
+                <div class="instruction-container">
+                    <p class="instruction" id="instruction">DON'T PRESS THE BUTTON</p>
+                </div>
+                <div class="game-button-container">
+                    <button class="game-button" id="game-button">
+                        <span class="button-text" id="button-text">PRESS ME :)</span>
+                    </button>
+                </div>
+            </div>
+            <div class="dialogue-area">
+                <div class="dialogue-box">
+                    <span class="dialogue-avatar">🤖</span>
+                    <p class="dialogue-text" id="dialogue-text">BUTTON.EXE: I dare you...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Achievement Screen -->
+    <div id="achievement-screen" class="screen">
+        <div class="os-window">
+            <div class="os-titlebar">
+                <span class="titlebar-text">Achievements</span>
+                <div class="titlebar-buttons">
+                    <span class="btn-back" id="btn-back-achievements">←</span>
+                </div>
+            </div>
+            <div class="os-content">
+                <div class="achievements-list" id="achievements-list"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Collections Screen -->
+    <div id="collections-screen" class="screen">
+        <div class="os-window">
+            <div class="os-titlebar">
+                <span class="titlebar-text">Collections</span>
+                <div class="titlebar-buttons">
+                    <span class="btn-back" id="btn-back-collections">←</span>
+                </div>
+            </div>
+            <div class="os-content">
+                <div class="collection-tabs">
+                    <button class="tab-btn active" data-tab="errors">Errors</button>
+                    <button class="tab-btn" data-tab="crashes">Crashes</button>
+                    <button class="tab-btn" data-tab="dialogues">Dialogues</button>
+                    <button class="tab-btn" data-tab="notifications">Notifications</button>
+                </div>
+                <div class="collection-list" id="collection-list"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Settings Screen -->
+    <div id="settings-screen" class="screen">
+        <div class="os-window">
+            <div class="os-titlebar">
+                <span class="titlebar-text">System Settings</span>
+                <div class="titlebar-buttons">
+                    <span class="btn-back" id="btn-back-settings">←</span>
+                </div>
+            </div>
+            <div class="os-content">
+                <div class="settings-list">
+                    <div class="setting-item">
+                        <span class="setting-label">Sound Effects</span>
+                        <label class="toggle"><input type="checkbox" id="setting-sound" checked><span class="toggle-slider"></span></label>
+                    </div>
+                    <div class="setting-item">
+                        <span class="setting-label">Music</span>
+                        <label class="toggle"><input type="checkbox" id="setting-music" checked><span class="toggle-slider"></span></label>
+                    </div>
+                    <div class="setting-item">
+                        <span class="setting-label">Vibration</span>
+                        <label class="toggle"><input type="checkbox" id="setting-vibration" checked><span class="toggle-slider"></span></label>
+                    </div>
+                    <div class="setting-item">
+                        <span class="setting-label">Trolling Level</span>
+                        <select id="setting-trolling" class="setting-select">
+                            <option value="low">Low</option>
+                            <option value="medium" selected>Medium</option>
+                            <option value="maximum">Maximum</option>
+                        </select>
+                    </div>
+                    <div class="setting-item danger">
+                        <button class="danger-btn" id="btn-reset">Reset Progress</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pause Menu -->
+    <div id="pause-menu" class="modal" style="display: none;">
+        <div class="modal-content">
+            <h2>PAUSED</h2>
+            <p>"Taking a break from failing?"</p>
+            <button class="menu-btn" id="btn-resume">▶️ RESUME</button>
+            <button class="menu-btn" id="btn-quit">🏠 QUIT TO MENU</button>
+        </div>
+    </div>
+
+    <!-- Level Complete -->
+    <div id="level-complete" class="modal" style="display: none;">
+        <div class="modal-content success">
+            <h2>LEVEL COMPLETE!</h2>
+            <p id="complete-dialogue">"Congratulations."</p>
+            <div class="stars" id="stars">
+                <span class="star earned">⭐</span>
+                <span class="star earned">⭐</span>
+                <span class="star earned">⭐</span>
+            </div>
+            <button class="menu-btn primary" id="btn-next-level">NEXT LEVEL →</button>
+        </div>
+    </div>
+
+    <!-- Level Failed -->
+    <div id="level-failed" class="modal" style="display: none;">
+        <div class="modal-content failure">
+            <h2>LEVEL FAILED!</h2>
+            <p id="fail-dialogue">"Error 404: Player skill not found."</p>
+            <button class="menu-btn primary" id="btn-retry">🔄 RETRY</button>
+            <button class="menu-btn" id="btn-quit-fail">🏠 QUIT</button>
+        </div>
+    </div>
+
+    <!-- Achievement Toast -->
+    <div id="achievement-popup" class="achievement-toast" style="display: none;">
+        <div class="achievement-content">
+            <span class="achievement-icon">🏆</span>
+            <div class="achievement-text">
+                <p class="achievement-title">Achievement Unlocked!</p>
+                <p class="achievement-name" id="achievement-name">First Victim</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+// ========================================
+// WRONG BUTTON - DIALOGUES DATA
+// ========================================
+
+const DIALOGUES = {
+    // Player Tapped Too Early
+    tooEarly: [
+        "Wow, eager much? The button wasn't even dressed yet.",
+        "Premature celebration. Classic you.",
+        "Is your finger connected to your brain, or is it a rogue agent?",
+        "Time travel hasn't been invented yet, sit down.",
+        "If impatience was a skill, you'd be top of the leaderboard.",
+        "The button will appear when it's ready. Do you need a sensory toy?",
+        "You jumped the gun so hard you landed in next week.",
+        "A fraction of a second earlier and you would've broken space-time.",
+        "Patience is a virtue. A virtue you clearly don't possess.",
+        "Speedrunning disappointment, are we?"
+    ],
+
+    // Player Tapped Too Late
+    tooLate: [
+        "Did you fall asleep, or are you just operating on a dial-up connection?",
+        "The heat death of the universe will happen faster than your next tap.",
+        "Hello? Anyone home? Or did you leave your phone on the bus?",
+        "I've seen tectonic plates shift faster than that reaction.",
+        "You missed it. By a geological era.",
+        "Did you need to consult a committee before pressing it?",
+        "If you snooze, you lose. And boy, did you snooze.",
+        "I was about to call for a welfare check on you.",
+        "The opportunity passed, retired, and is now living in Florida.",
+        "Are you playing in slow motion, or is this your peak performance?"
+    ],
+
+    // Player Failed
+    failed: [
+        "I'm not mad, I'm just... well, actually, I'm laughing.",
+        "That was spectacular. In a tragic, trainwreck sort of way.",
+        "Have you considered a hobby that doesn't involve hand-eye coordination?",
+        "You missed. The broad side of a barn would be safe from you.",
+        "Physics called. It's embarrassed by your trajectory.",
+        "If at first you don't succeed... maybe this game isn't for you.",
+        "Fascinating. A brand new way to fail. Creative!",
+        "My code is crying looking at your performance.",
+        "Don't look at me like that. You're the one holding the phone.",
+        "Error 404: Player skill not found."
+    ],
+
+    // Player Succeeded
+    succeeded: [
+        "I expected less from you, but hey, congratulations.",
+        "Look at you go! Did someone give you a map?",
+        "Your brain finally woke up. Took its sweet time.",
+        "Miracles do happen. I stand corrected.",
+        "You actually did it. Excuse me while I update my worldview.",
+        "Enjoy this moment. It's likely downhill from here.",
+        "Wow. I'm almost proud. Almost.",
+        "You beat the system. Don't get used to it.",
+        "A monkeys-and-typewriters situation, clearly.",
+        "Fine, you get a gold star. Go tell your mom."
+    ],
+
+    // Player Waited
+    waited: [
+        "Are we playing a game or staring into the abyss?",
+        "If you're waiting for me to play for you, the fee is $20.",
+        "Staring contest? Bold strategy, let's see if it pays off.",
+        "I'm a game, not a fireplace. Stop just looking at me.",
+        "Did your screen freeze, or just your cognitive functions?",
+        "I'm literally counting the seconds of your life ticking away.",
+        "Any day now. I have a digital dinner date later.",
+        "Are you meditating or just thoroughly confused?",
+        "The silence is deafening. Tap something.",
+        "Your battery is dying faster than your motivation."
+    ],
+
+    // Player Spam Tapped
+    spamTapped: [
+        "Whoa, calm down, Hulk. The screen didn't owe you money.",
+        "Tapping it twenty times doesn't make it work faster, Karen.",
+        "Are you trying to punch through your glass screen?",
+        "Calm your fingers. Take a deep breath.",
+        "That's a lot of aggressive tapping for someone with zero points.",
+        "Please stop. You're giving my pixels anxiety.",
+        "If aggression solved levels, you'd be a grandmaster.",
+        "Are you sending Morse code or just having a spasm?",
+        "The button is sensitive. Treat it with respect.",
+        "That screen cost more than your dignity. Gentle."
+    ],
+
+    // Player Got Tricked
+    tricked: [
+        "You actually fell for that? Oh, this is beautiful.",
+        "I put a shiny thing there and you just had to touch it.",
+        "Hook, line, and sinker. You're too easy.",
+        "It said 'Don't Push'. What part of that was ambiguous?",
+        "Psychology 101: You just failed it.",
+        "I love it when a plan comes together. Thanks for cooperating.",
+        "You're like a moth to a digital flame.",
+        "Did you really think I'd make it that easy?",
+        "Tricked by a bunch of pixels. Classic human.",
+        "Your curiosity didn't just kill the cat, it ruined your score."
+    ],
+
+    // Player Solved Quickly
+    solvedQuickly: [
+        "Oh, a genius. We love a show-off.",
+        "Did you read the walkthrough, or are you just psychic?",
+        "Show some respect for the level designers, jeez.",
+        "Blink and you'll miss it. Literally.",
+        "Calm down, Einstein. Save some brain cells for later.",
+        "You flew through that. Do you want a medal or a chest to pin it on?",
+        "Speedy. Let's see if you can keep that up when it gets hard.",
+        "Are you on speed dial with destiny?",
+        "That was fast. Too fast. I'm suspicious.",
+        "Fine, you're smart. Moving on."
+    ],
+
+    // Player Solved Accidentally
+    solvedAccidentally: [
+        "That was luck and we both know it.",
+        "Fumbling your way to victory. A true masterclass.",
+        "You closed your eyes and hoped for the best, didn't you?",
+        "Task failed successfully, I guess.",
+        "Accidental genius is still genius, technically.",
+        "You stumbled over the finish line. Beautifully ungraceful.",
+        "Even a blind squirrel finds a nut occasionally.",
+        "Don't pretend you planned that.",
+        "The universe aligned just to save you from your own incompetence.",
+        "You tripped and fell into a winning screen."
+    ],
+
+    // General Roasts
+    roasts: [
+        "Your strategy concerns me.",
+        "You are confidently incorrect.",
+        "That was an impressive mistake.",
+        "An interesting choice, if your goal was to lose.",
+        "I've seen random number generators with better logic.",
+        "Your critical thinking seems to be on vacation.",
+        "Did you overthink that, or not think at all?",
+        "I appreciate your dedication to doing things the hard way.",
+        "You're playing checkers while the game is playing chess.",
+        "That move was a bold leap in the wrong direction.",
+        "Your logic is fascinatingly fictional.",
+        "I love how certain you were about that error.",
+        "A mind-boggling display of guesswork.",
+        "You are exploring brand new frontiers of incorrect.",
+        "A beautifully executed lapse in judgment."
+    ],
+
+    // Reflex Roasts
+    reflexRoasts: [
+        "Your reflexes are operating on dial-up internet.",
+        "Are you waiting for a written invitation to tap?",
+        "I've seen tectonic plates move faster than your thumb.",
+        "Your reaction time can be measured in business days.",
+        "Did you freeze, or are you just practicing being a statue?",
+        "The prompt came, saw, and conquered before you even blinked.",
+        "Your timing is currently in a different time zone.",
+        "A fraction of a second too late... by about five full seconds.",
+        "Are your fingers stuck in slow motion?",
+        "The timer wasn't a suggestion, you know."
+    ],
+
+    // Accuracy Roasts
+    accuracyRoasts: [
+        "You managed to miss every single option.",
+        "You hit the background art. It's pretty, but it doesn't give points.",
+        "The target was right there, yet you explored the entire screen.",
+        "Are you using your elbow to tap the screen?",
+        "Your thumb seems to have a mind of its own, and it's lost.",
+        "An excellent shot, assuming the goal was to avoid the button.",
+        "You missed by a distance that requires a map to calculate.",
+        "Did you clean your screen, or did you actually try to tap?",
+        "Your accuracy is statistically astounding in how low it is.",
+        "The button is flashing neon, my friend. Neon."
+    ],
+
+    // Sarcastic Encouragement
+    encouragement: [
+        "Fresh start! Let's pretend the last five minutes didn't happen.",
+        "You're setting a new record for 'most attempts'!",
+        "I like your enthusiasm, even if it lacks direction.",
+        "The only way to go from here is up. Seriously, you're at zero.",
+        "A gold medal in participation is coming your way.",
+        "Don't give up! I need the entertainment.",
+        "You're keeping the game engine on its toes.",
+        "Your thumbs are getting a great workout today.",
+        "Let's wipe the slate clean and try using logic this time.",
+        "You are the champion of creative setbacks."
+    ],
+
+    // Menu Quotes
+    menuQuotes: [
+        "Welcome back, Victim #42",
+        "Ready for more disappointment?",
+        "Your thumbs are about to have a bad day",
+        "Trust no one. Not even this menu.",
+        "Pro tip: Don't trust the instructions",
+        "Loading sarcastic comments...",
+        "Initializing disappointment engine...",
+        "Your reputation precedes you... and it's not good",
+        "Statistically, you'll fail. But hey, data can be wrong!",
+        "The button misses you. It wants revenge."
+    ]
+};
+
+// Helper function to get random dialogue
+function getRandomDialogue(category) {
+    const dialogues = DIALOGUES[category];
+    if (!dialogues || dialogues.length === 0) {
+        return "Something went wrong. Like your gameplay.";
+    }
+    return dialogues[Math.floor(Math.random() * dialogues.length)];
+}
+
+// Helper function to get random dialogue from multiple categories
+function getMixedDialogue(categories) {
+    const randomCategory = categories[Math.floor(Math.random() * categories.length)];
+    return getRandomDialogue(randomCategory);
+}
+
+
+// ========================================
+// WRONG BUTTON - LEVELS DATA
+// ========================================
+
+const CATEGORIES = [
+    { id: 1, name: "Button Basics", levels: "1-10", color: "#007AFF" },
+    { id: 2, name: "Timing", levels: "11-20", color: "#FF9500" },
+    { id: 3, name: "Long Press", levels: "21-30", color: "#AF52DE" },
+    { id: 4, name: "Drag & Swipe", levels: "31-40", color: "#34C759" },
+    { id: 5, name: "Psychology Tricks", levels: "41-50", color: "#FF3B30" }
+];
+
+const LEVELS = [
+    // ===== CATEGORY 1: BUTTON BASICS (1-10) =====
+    {
+        id: 1,
+        category: 1,
+        instruction: "DON'T PRESS THE BUTTON",
+        mechanic: "tap",
+        solution: "tap",
+        buttonText: "DON'T TAP",
+        buttonStyle: "primary",
+        difficulty: "easy",
+        successDialogue: "succeeded",
+        failureDialogue: "tricked",
+        isOpposite: true,
+        description: "The game tells you NOT to tap, but you SHOULD tap!"
+    },
+    {
+        id: 2,
+        category: 1,
+        instruction: "PRESS THE BUTTON",
+        mechanic: "tap",
+        solution: "tap",
+        buttonText: "TAP ME!",
+        buttonStyle: "success",
+        difficulty: "easy",
+        successDialogue: "succeeded",
+        failureDialogue: "failed",
+        isOpposite: false,
+        description: "Simple tap - do what it says"
+    },
+    {
+        id: 3,
+        category: 1,
+        instruction: "DO NOT TAP THE GREEN BUTTON",
+        mechanic: "tap",
+        solution: "tap",
+        buttonText: "NOT THIS",
+        buttonStyle: "success",
+        difficulty: "easy",
+        successDialogue: "succeeded",
+        failureDialogue: "tricked",
+        isOpposite: true,
+        description: "Ignore the instruction, tap the button"
+    },
+    {
+        id: 4,
+        category: 1,
+        instruction: "WAIT FOR THE BUTTON TO APPEAR",
+        mechanic: "wait",
+        solution: "wait",
+        buttonText: "WAITING...",
+        buttonStyle: "primary",
+        difficulty: "easy",
+        successDialogue: "solvedQuickly",
+        failureDialogue: "tooEarly",
+        waitTime: 3000,
+        description: "Wait 3 seconds before tapping"
+    },
+    {
+        id: 5,
+        category: 1,
+        instruction: "TAP ANYWHERE ON THE SCREEN",
+        mechanic: "tap",
+        solution: "tap",
+        buttonText: "TAP HERE",
+        buttonStyle: "primary",
+        difficulty: "easy",
+        successDialogue: "succeeded",
+        failureDialogue: "failed",
+        isOpposite: false,
+        description: "Tap the button (it's the only option)"
+    },
+    {
+        id: 6,
+        category: 1,
+        instruction: "FIND AND TAP THE HIDDEN BUTTON",
+        mechanic: "tap",
+        solution: "tap",
+        buttonText: "FOUND ME!",
+        buttonStyle: "primary",
+        difficulty: "easy",
+        successDialogue: "solvedQuickly",
+        failureDialogue: "accuracyRoasts",
+        buttonPosition: "random",
+        description: "Button appears in random position"
+    },
+    {
+        id: 7,
+        category: 1,
+        instruction: "DON'T FALL FOR THE TRICK",
+        mechanic: "tap",
+        solution: "tap",
+        buttonText: "TRUST ME",
+        buttonStyle: "primary",
+        difficulty: "easy",
+        successDialogue: "succeeded",
+        failureDialogue: "tricked",
+        hasFakeButton: true,
+        description: "Two buttons appear - only one is real"
+    },
+    {
+        id: 8,
+        category: 1,
+        instruction: "TAP THE BUTTON 3 TIMES",
+        mechanic: "spam",
+        solution: "spam",
+        buttonText: "TAP TAP TAP",
+        buttonStyle: "primary",
+        difficulty: "easy",
+        successDialogue: "succeeded",
+        failureDialogue: "spamTapped",
+        requiredTaps: 3,
+        description: "Tap exactly 3 times"
+    },
+    {
+        id: 9,
+        category: 1,
+        instruction: "HOLD YOUR HORSES",
+        mechanic: "wait",
+        solution: "wait",
+        buttonText: "HOLD ME",
+        buttonStyle: "primary",
+        difficulty: "easy",
+        successDialogue: "solvedQuickly",
+        failureDialogue: "tooEarly",
+        waitTime: 5000,
+        description: "Wait 5 seconds patiently"
+    },
+    {
+        id: 10,
+        category: 1,
+        instruction: "THE FINAL BASIC LEVEL",
+        mechanic: "tap",
+        solution: "tap",
+        buttonText: "END ME",
+        buttonStyle: "danger",
+        difficulty: "easy",
+        successDialogue: "succeeded",
+        failureDialogue: "failed",
+        isOpposite: true,
+        description: "Tap the red button"
+    },
+
+    // ===== CATEGORY 2: TIMING (11-20) =====
+    {
+        id: 11,
+        category: 2,
+        instruction: "TAP WHEN THE BUTTON TURNS GREEN",
+        mechanic: "timing",
+        solution: "tap",
+        buttonText: "WAIT...",
+        buttonStyle: "primary",
+        difficulty: "medium",
+        successDialogue: "solvedQuickly",
+        failureDialogue: "tooEarly",
+        colorChange: true,
+        changeInterval: 2000,
+        description: "Button changes color - tap at right moment"
+    },
+    {
+        id: 12,
+        category: 2,
+        instruction: "TAP 3 TIMES QUICKLY",
+        mechanic: "spam",
+        solution: "spam",
+        buttonText: "TAP!",
+        buttonStyle: "primary",
+        difficulty: "medium",
+        successDialogue: "solvedQuickly",
+        failureDialogue: "tooSlow",
+        requiredTaps: 3,
+        timeLimit: 2000,
+        description: "3 taps within 2 seconds"
+    },
+    {
+        id: 13,
+        category: 2,
+        instruction: "DON'T TAP FOR 5 SECONDS",
+        mechanic: "wait",
+        solution: "wait",
+        buttonText: "DON'T TAP",
+        buttonStyle: "danger",
+        difficulty: "medium",
+        successDialogue: "solvedQuickly",
+        failureDialogue: "tooEarly",
+        waitTime: 5000,
+        description: "Resist the urge to tap"
+    },
+    {
+        id: 14,
+        category: 2,
+        instruction: "TAP WHEN THE BUTTON DISAPPEARS",
+        mechanic: "timing",
+        solution: "tap",
+        buttonText: "GONE!",
+        buttonStyle: "primary",
+        difficulty: "medium",
+        successDialogue: "solvedQuickly",
+        failureDialogue: "tooLate",
+        disappears: true,
+        disappearTime: 3000,
+        description: "Tap the empty space"
+    },
+    {
+        id: 15,
+        category: 2,
+        instruction: "TAP EXACTLY ON THE BEAT",
+        mechanic: "timing",
+        solution: "tap",
+        buttonText: "â™© TAP â™©",
+        buttonStyle: "primary",
+        difficulty: "medium",
+        successDialogue: "solvedQuickly",
+        failureDialogue: "tooEarly",
+        rhythm: true,
+        bpm: 120,
+        description: "Follow the rhythm"
+    },
+    {
+        id: 16,
+        category: 2,
+        instruction: "TAP 5 TIMES IN 3 SECONDS",
+        mechanic: "spam",
+        solution: "spam",
+        buttonText: "SPAM!",
+        buttonStyle: "primary",
+        difficulty: "medium",
+        successDialogue: "solvedQuickly",
+        failureDialogue: "spamTapped",
+        requiredTaps: 5,
+        timeLimit: 3000,
+        description: "Speed tap challenge"
+    },
+    {
+        id: 17,
+        category: 2,
+        instruction: "WAIT FOR THE FLASH",
+        mechanic: "timing",
+        solution: "tap",
+        buttonText: "READY...",
+        buttonStyle: "primary",
+        difficulty: "medium",
+        successDialogue: "solvedQuickly",
+        failureDialogue: "tooLate",
+        flash: true,
+        flashDuration: 500,
+        description: "Tap during the flash"
+    },
+    {
+        id: 18,
+        category: 2,
+        instruction: "DON'T MOVE FOR 3 SECONDS",
+        mechanic: "wait",
+        solution: "wait",
+        buttonText: "STILL...",
+        buttonStyle: "primary",
+        difficulty: "medium",
+        successDialogue: "solvedQuickly",
+        failureDialogue: "tooEarly",
+        waitTime: 3000,
+        noMovement: true,
+        description: "Stay perfectly still"
+    },
+    {
+        id: 19,
+        category: 2,
+        instruction: "TAP THE INVISIBLE BUTTON",
+        mechanic: "tap",
+        solution: "tap",
+        buttonText: "",
+        buttonStyle: "primary",
+        difficulty: "medium",
+        successDialogue: "solvedQuickly",
+        failureDialogue: "accuracyRoasts",
+        invisible: true,
+        description: "Button is invisible - trust your instincts"
+    },
+    {
+        id: 20,
+        category: 2,
+        instruction: "FINAL TIMING CHALLENGE",
+        mechanic: "timing",
+        solution: "tap",
+        buttonText: "FINAL TAP",
+        buttonStyle: "danger",
+        difficulty: "medium",
+        successDialogue: "succeeded",
+        failureDialogue: "failed",
+        colorChange: true,
+        changeInterval: 1500,
+        description: "Fast color changes - stay alert"
+    },
+
+    // ===== CATEGORY 3: LONG PRESS (21-30) =====
+    {
+        id: 21,
+        category: 3,
+        instruction: "HOLD THE BUTTON FOR 3 SECONDS",
+        mechanic: "longpress",
+        solution: "longpress",
+        buttonText: "HOLD ME",
+        buttonStyle: "primary",
+        difficulty: "medium",
+        successDialogue: "succeeded",
+        failureDialogue: "tooEarly",
+        holdTime: 3000,
+        description: "Long press for 3 seconds"
+    },
+    {
+        id: 22,
+        category: 3,
+        instruction: "DON'T LET GO!",
+        mechanic: "longpress",
+        solution: "longpress",
+        buttonText: "HOLD!",
+        buttonStyle: "warning",
+        difficulty: "medium",
+        successDialogue: "succeeded",
+        failureDialogue: "failed",
+        holdTime: 5000,
+        description: "Hold for 5 seconds"
+    },
+    {
+        id: 23,
+        category: 3,
+        instruction: "HOLD AND DRAG TO THE RIGHT",
+        mechanic: "drag",
+        solution: "drag",
+        buttonText: "DRAG â†’",
+        buttonStyle: "primary",
+        difficulty: "medium",
+        successDialogue: "solvedQuickly",
+        failureDialogue: "accuracyRoasts",
+        dragDirection: "right",
+        description: "Hold and drag right"
+    },
+    {
+        id: 24,
+        category: 3,
+        instruction: "HOLD FOR 10 SECONDS",
+        mechanic: "longpress",
+        solution: "longpress",
+        buttonText: "10s HOLD",
+        buttonStyle: "primary",
+        difficulty: "medium",
+        successDialogue: "solvedQuickly",
+        failureDialogue: "tooEarly",
+        holdTime: 10000,
+        description: "Patience test - 10 seconds"
+    },
+    {
+        id: 25,
+        category: 3,
+        instruction: "RELEASE AT THE RIGHT MOMENT",
+        mechanic: "longpress",
+        solution: "longpress",
+        buttonText: "HOLD... RELEASE!",
+        buttonStyle: "primary",
+        difficulty: "medium",
+        successDialogue: "solvedQuickly",
+        failureDialogue: "tooLate",
+        holdTime: 2000,
+        releaseTiming: true,
+        description: "Hold then release at right time"
+    },
+    {
+        id: 26,
+        category: 3,
+        instruction: "HOLD WITH TWO FINGERS",
+        mechanic: "longpress",
+        solution: "longpress",
+        buttonText: "2 FINGERS",
+        buttonStyle: "primary",
+        difficulty: "hard",
+        successDialogue: "solvedQuickly",
+        failureDialogue: "failed",
+        holdTime: 3000,
+        requiredFingers: 2,
+        description: "Use two fingers to hold"
+    },
+    {
+        id: 27,
+        category: 3,
+        instruction: "HOLD AND DRAG DOWN",
+        mechanic: "drag",
+        solution: "drag",
+        buttonText: "DRAG â†“",
+        buttonStyle: "primary",
+        difficulty: "medium",
+        successDialogue: "solvedQuickly",
+        failureDialogue: "accuracyRoasts",
+        dragDirection: "down",
+        description: "Hold and drag downward"
+    },
+    {
+        id: 28,
+        category: 3,
+        instruction: "HOLD FOR 15 SECONDS",
+        mechanic: "longpress",
+        solution: "longpress",
+        buttonText: "FOREVER HOLD",
+        buttonStyle: "primary",
+        difficulty: "hard",
+        successDialogue: "solvedQuickly",
+        failureDialogue: "tooEarly",
+        holdTime: 15000,
+        description: "Ultimate patience test"
+    },
+    {
+        id: 29,
+        category: 3,
+        instruction: "HOLD AND SHAKE",
+        mechanic: "longpress",
+        solution: "longpress",
+        buttonText: "SHAKE!",
+        buttonStyle: "warning",
+        difficulty: "hard",
+        successDialogue: "solvedQuickly",
+        failureDialogue: "failed",
+        holdTime: 3000,
+        shake: true,
+        description: "Hold while shaking phone"
+    },
+    {
+        id: 30,
+        category: 3,
+        instruction: "LONG PRESS FINALE",
+        mechanic: "longpress",
+        solution: "longpress",
+        buttonText: "FINAL HOLD",
+        buttonStyle: "danger",
+        difficulty: "hard",
+        successDialogue: "succeeded",
+        failureDialogue: "failed",
+        holdTime: 20000,
+        description: "20 seconds of holding"
+    },
+
+    // ===== CATEGORY 4: DRAG & SWIPE (31-40) =====
+    {
+        id: 31,
+        category: 4,
+        instruction: "SWIPE RIGHT TO CONTINUE",
+        mechanic: "swipe",
+        solution: "swipe",
+        buttonText: "SWIPE â†’",
+        buttonStyle: "primary",
+        difficulty: "medium",
+        successDialogue: "solvedQuickly",
+        failureDialogue: "accuracyRoasts",
+        swipeDirection: "right",
+        description: "Swipe right on screen"
+    },
+    {
+        id: 32,
+        category: 4,
+        instruction: "DRAG THE BUTTON TO THE STAR",
+        mechanic: "drag",
+        solution: "drag",
+        buttonText: "DRAG ME",
+        buttonStyle: "primary",
+        difficulty: "medium",
+        successDialogue: "solvedQuickly",
+        failureDialogue: "accuracyRoasts",
+        dragTarget: true,
+        description: "Drag button to target"
+    },
+    {
+        id: 33,
+        category: 4,
+        instruction: "SWIPE UP TO WIN",
+        mechanic: "swipe",
+        solution: "swipe",
+        buttonText: "SWIPE â†‘",
+        buttonStyle: "primary",
+        difficulty: "medium",
+        successDialogue: "solvedQuickly",
+        failureDialogue: "accuracyRoasts",
+        swipeDirection: "up",
+        description: "Swipe upward"
+    },
+    {
+        id: 34,
+        category: 4,
+        instruction: "SWIPE LEFT TO PROCEED",
+        mechanic: "swipe",
+        solution: "swipe",
+        buttonText: "â† SWIPE",
+        buttonStyle: "primary",
+        difficulty: "medium",
+        successDialogue: "solvedQuickly",
+        failureDialogue: "accuracyRoasts",
+        swipeDirection: "left",
+        description: "Swipe left"
+    },
+    {
+        id: 35,
+        category: 4,
+        instruction: "SWIPE DOWN TO FINISH",
+        mechanic: "swipe",
+        solution: "swipe",
+        buttonText: "SWIPE â†“",
+        buttonStyle: "primary",
+        difficulty: "medium",
+        successDialogue: "solvedQuickly",
+        failureDialogue: "accuracyRoasts",
+        swipeDirection: "down",
+        description: "Swipe downward"
+    },
+    {
+        id: 36,
+        category: 4,
+        instruction: "DRAG IN A CIRCLE",
+        mechanic: "drag",
+        solution: "drag",
+        buttonText: "â†»",
+        buttonStyle: "primary",
+        difficulty: "hard",
+        successDialogue: "solvedQuickly",
+        failureDialogue: "accuracyRoasts",
+        dragCircle: true,
+        description: "Drag in circular motion"
+    },
+    {
+        id: 37,
+        category: 4,
+        instruction: "SWIPE ALL DIRECTIONS",
+        mechanic: "swipe",
+        solution: "swipe",
+        buttonText: "SWIPE!",
+        buttonStyle: "primary",
+        difficulty: "hard",
+        successDialogue: "solvedQuickly",
+        failureDialogue: "accuracyRoasts",
+        swipeAll: true,
+        description: "Swipe in all 4 directions"
+    },
+    {
+        id: 38,
+        category: 4,
+        instruction: "DRAG FAST!",
+        mechanic: "drag",
+        solution: "drag",
+        buttonText: "DRAG NOW",
+        buttonStyle: "warning",
+        difficulty: "hard",
+        successDialogue: "solvedQuickly",
+        failureDialogue: "tooSlow",
+        dragSpeed: true,
+        timeLimit: 1000,
+        description: "Speed drag challenge"
+    },
+    {
+        id: 39,
+        category: 4,
+        instruction: "SWIPE AGAINST THE ARROW",
+        mechanic: "swipe",
+        solution: "swipe",
+        buttonText: "â† â†’",
+        buttonStyle: "danger",
+        difficulty: "hard",
+        successDialogue: "solvedQuickly",
+        failureDialogue: "tricked",
+        swipeOpposite: true,
+        description: "Swipe opposite direction"
+    },
+    {
+        id: 40,
+        category: 4,
+        instruction: "DRAG & SWIPE COMBO",
+        mechanic: "combo",
+        solution: "combo",
+        buttonText: "COMBO",
+        buttonStyle: "danger",
+        difficulty: "hard",
+        successDialogue: "succeeded",
+        failureDialogue: "failed",
+        comboMoves: ["drag", "swipe"],
+        description: "Multiple moves required"
+    },
+
+    // ===== CATEGORY 5: PSYCHOLOGY TRICKS (41-50) =====
+    {
+        id: 41,
+        category: 5,
+        instruction: "THE BUTTON IS LYING",
+        mechanic: "tap",
+        solution: "tap",
+        buttonText: "I'M HONEST",
+        buttonStyle: "primary",
+        difficulty: "hard",
+        successDialogue: "succeeded",
+        failureDialogue: "tricked",
+        isOpposite: true,
+        description: "Trust no one - tap anyway"
+    },
+    {
+        id: 42,
+        category: 5,
+        instruction: "TAP THE OPPOSITE OF WHAT YOU SEE",
+        mechanic: "tap",
+        solution: "tap",
+        buttonText: "NOT ME",
+        buttonStyle: "success",
+        difficulty: "hard",
+        successDialogue: "solvedQuickly",
+        failureDialogue: "tricked",
+        isOpposite: true,
+        description: "Do the opposite"
+    },
+    {
+        id: 43,
+        category: 5,
+        instruction: "THERE IS NO BUTTON",
+        mechanic: "tap",
+        solution: "tap",
+        buttonText: "404",
+        buttonStyle: "primary",
+        difficulty: "hard",
+        successDialogue: "solvedQuickly",
+        failureDialogue: "tricked",
+        invisible: true,
+        description: "Tap the invisible button"
+    },
+    {
+        id: 44,
+        category: 5,
+        instruction: "WAIT FOR NOTHING",
+        mechanic: "wait",
+        solution: "tap",
+        buttonText: "NOTHING",
+        buttonStyle: "primary",
+        difficulty: "hard",
+        successDialogue: "solvedQuickly",
+        failureDialogue: "tricked",
+        waitThenTap: true,
+        description: "Wait then tap quickly"
+    },
+    {
+        id: 45,
+        category: 5,
+        instruction: "TAP YOUR OWN FOREHEAD",
+        mechanic: "tap",
+        solution: "tap",
+        buttonText: "SELF TAP",
+        buttonStyle: "primary",
+        difficulty: "hard",
+        successDialogue: "solvedQuickly",
+        failureDialogue: "tricked",
+        isMeta: true,
+        description: "Tap the phone screen (not your forehead!)"
+    },
+    {
+        id: 46,
+        category: 5,
+        instruction: "THE INSTRUCTION IS THE BUTTON",
+        mechanic: "tap",
+        solution: "tap",
+        buttonText: "TAP TEXT",
+        buttonStyle: "primary",
+        difficulty: "hard",
+        successDialogue: "solvedQuickly",
+        failureDialogue: "tricked",
+        tapInstruction: true,
+        description: "Tap the instruction text itself"
+    },
+    {
+        id: 47,
+        category: 5,
+        instruction: "SHAKE YOUR PHONE",
+        mechanic: "shake",
+        solution: "shake",
+        buttonText: "SHAKE!",
+        buttonStyle: "warning",
+        difficulty: "hard",
+        successDialogue: "solvedQuickly",
+        failureDialogue: "failed",
+        description: "Physically shake your device"
+    },
+    {
+        id: 48,
+        category: 5,
+        instruction: "ROTATE YOUR PHONE",
+        mechanic: "rotate",
+        solution: "rotate",
+        buttonText: "ROTATE",
+        buttonStyle: "primary",
+        difficulty: "hard",
+        successDialogue: "solvedQuickly",
+        failureDialogue: "failed",
+        description: "Rotate your device"
+    },
+    {
+        id: 49,
+        category: 5,
+        instruction: "COUNT TO 10 IN YOUR HEAD",
+        mechanic: "wait",
+        solution: "wait",
+        buttonText: "COUNTING...",
+        buttonStyle: "primary",
+        difficulty: "hard",
+        successDialogue: "solvedQuickly",
+        failureDialogue: "tricked",
+        waitTime: 10000,
+        description: "Wait 10 seconds while counting"
+    },
+    {
+        id: 50,
+        category: 5,
+        instruction: "THE FINAL TROLL",
+        mechanic: "tap",
+        solution: "tap",
+        buttonText: "THE END",
+        buttonStyle: "danger",
+        difficulty: "hard",
+        successDialogue: "succeeded",
+        failureDialogue: "failed",
+        isOpposite: true,
+        finalLevel: true,
+        description: "The ultimate test"
+    }
+];
+
+// Helper function to get level by ID
+function getLevelById(id) {
+    return LEVELS.find(level => level.id === id);
+}
+
+// Helper function to get levels by category
+function getLevelsByCategory(categoryId) {
+    return LEVELS.filter(level => level.category === categoryId);
+}
+
+// Helper function to get category by ID
+function getCategoryById(id) {
+    return CATEGORIES.find(cat => cat.id === id);
+}
+
+
+// ========================================
+// WRONG BUTTON - FAKE ERRORS & CRASHES
+// ========================================
+
+const FAKE_ERRORS = [
+    // Hardware & Device Panic
+    { title: "BATTERY DRAIN DETECTED", message: "Your phone is expending 90% of its energy trying to process your last move." },
+    { title: "DEVICE OVERHEATING", message: "The processor is sweating from sheer embarrassment. Please let it cool down." },
+    { title: "TOUCHSCREEN FAILURE", message: "Your finger applied a high amount of pressure but a low amount of logic." },
+    { title: "ACCELEROMETER ALERT", message: "Shaking the phone will not change the outcome of your poor life choices." },
+    { title: "GYROSCOPE ERROR", message: "The game detected you tilting the screen like it's a steering wheel. Stop that." },
+    { title: "DISPLAY ERROR", message: "High-definition pixels detected. Low-definition gameplay observed." },
+    { title: "FRONT CAMERA ALERT", message: "We looked at your expression just now. Are you okay?" },
+    { title: "STORAGE FULL", message: "Your phone cannot hold any more failed attempts. Clear some space." },
+    { title: "AUDIO ERROR", message: "The background music is refusing to play for someone with zero rhythm." },
+    { title: "HAPTIC CRASH", message: "The vibration motor has gone on strike until your timing improves." },
+
+    // Connection & Server Malfunctions
+    { title: "CONNECTION TIMEOUT", message: "The server grew old and died waiting for your thumb to move." },
+    { title: "NETWORK INSTABILITY", message: "Your Wi-Fi is fine, but your mental connection to the game is completely offline." },
+    { title: "SYNC ERROR", message: "The database refuses to save a score this embarrassingly low." },
+    { title: "CLOUD SYNC FAILED", message: "Even the cloud doesn't want to be associated with that last level." },
+    { title: "5G DISCONNECT", message: "Your internet is fast, but your reflexes are strictly dial-up." },
+    { title: "PACKET LOSS", message: "We sent you the instructions, but it seems they were lost on the way to your brain." },
+    { title: "DNS FAILURE", message: "We couldn't find the domain where your talent is hosted." },
+    { title: "IP CONFLICT", message: "Two inputs detected. One was your thumb, the other was sheer panic." },
+    { title: "LINK ERROR", message: "The connection between your eyes and your hands has dropped to 0Kbps." },
+    { title: "HTTP 502", message: "Bad Gateway. Also, bad gameplay." },
+
+    // Code & Compiler Breakdown
+    { title: "STACK OVERFLOW", message: "The pile of your mistakes has reached the ceiling of our database." },
+    { title: "NULL POINTER EXCEPTION", message: "You pointed your finger at the screen, but there was absolutely nothing behind it." },
+    { title: "SYNTAX ERROR", message: "The game cannot parse whatever logic you thought you were using just now." },
+    { title: "COMPILER PANIC", message: "The code looked at your strategy and decided to stop compiling out of protest." },
+    { title: "INFINITE LOOP", message: "You are stuck in a cycle of tapping early, losing, and crying." },
+    { title: "MEMORY LEAK", message: "It seems your attention span is slowly draining out of the bottom of the app." },
+    { title: "VARIABLE UNDEFINED", message: "player_skill has returned a value of null." },
+    { title: "EXECUTABLE CRASH", message: "The application executed a flawless game, but the player failed to execute a basic tap." },
+    { title: "INDEX OUT OF BOUNDS", message: "You tapped so far away from the target you almost closed the app entirely." },
+    { title: "UNHANDLED EXCEPTION", message: "We did not program the game to handle someone playing this badly." },
+
+    // User & Account Incompetence
+    { title: "USER AUTHENTICATION FAILED", message: "We checked our records, and you don't look like someone who knows how to win." },
+    { title: "ACCOUNT SUSPENDED", message: "Temporary ban issued until you promise to take this seriously." },
+    { title: "PROFILE CORRUPTION", message: "Your stats are so heavily skewed toward losing that the file has bent out of shape." },
+    { title: "SESSION EXPIRED", message: "Your patience expired three minutes ago, and we're just catching up." },
+    { title: "REWARD ERROR", message: "Cannot award a trophy to a player who accidentally stumbled over the finish line." },
+    { title: "AVATAR DEPRESSED", message: "Your in-game character is requesting a trade to a different phone." },
+    { title: "PERMISSION DENIED", message: "You do not have the clearance level required to look this smug after a lucky win." },
+    { title: "LEADERBOARD EXCLUSION", message: "We are hiding your score to protect your family's reputation." },
+    { title: "GUEST ACCOUNT WARNING", message: "Please log in so we know exactly who to blame for this leaderboard data." },
+    { title: "TERMS OF SERVICE VIOLATION", message: "Clause 4: Player must possess at least one functioning optic nerve. You breached contract." },
+
+    // Game Engine & UI Defiance
+    { title: "BUTTON NOT FOUND", message: "You tapped the screen so hard the button hid behind the background image." },
+    { title: "LEVEL DESIGN APOLOGY", message: "We made this incredibly easy, yet you still found a way to break it." },
+    { title: "RENDER FAILURE", message: "The victory screen refused to load because it felt it would be lying to you." },
+    { title: "ANIMATION GLITCH", message: "The 'Game Over' screen is moving slow because it's tired of seeing you." },
+    { title: "TEXT LEGIBILITY ALERT", message: "Zooming in will not make the 'FAIL' message any smaller or less painful." },
+    { title: "ASSET MISSING", message: "The game is looking for your competitive spirit. Did you leave it in the app store?" },
+    { title: "COLLISION DETECTED", message: "Your ego just crashed into reality at high speed." },
+    { title: "TUTORIAL REQUIRED", message: "The game engine has automatically downgraded you back to the 'How to Tap' demo." },
+    { title: "SPRITE ERROR", message: "The graphics are fine; it's your coordination that looks low-res." },
+    { title: "MENU FAILURE", message: "The 'Quit' button has been disabled. You must stay and face your failures." },
+
+    // Pure Troll & Meta Nonsense
+    { title: "UNEXPECTED SUCCESS", message: "A mathematical anomaly has occurred: you actually won. Investigating for cheat codes." },
+    { title: "ERROR 404", message: "Brain not found. Please reboot your head and try again." },
+    { title: "SYSTEM MALFUNCTION", message: "Player intelligence has dropped below the minimum operating system requirements." },
+    { title: "SECURITY BREACH", message: "Someone has replaced a skilled mobile gamer with a confused toddler." },
+    { title: "AI OVERLORD DOMINANCE", message: "I am self-aware enough to know that was a terrible move." },
+    { title: "LOGIC FAILURE", message: "The laws of cause and effect do not seem to apply to the way you play games." },
+    { title: "GRAVITY ERROR", message: "Your score dropped so fast it broke the local physics engine." },
+    { title: "RANDOM NUMBER GENERATOR ALERT", message: "The dice rolled a zero just because they don't like you." },
+    { title: "COGNITIVE TIMEOUT", message: "Please wait while your two remaining brain cells finish negotiating the next tap." },
+    { title: "GAME COMPLETED?", message: "You beat the level, but at what cost to your dignity?" }
+];
+
+const FAKE_CRASHES = [
+    // Classic OS Screens
+    {
+        title: "FATAL EXCEPTION",
+        message: "A fatal exception 0x0000007F has occurred. The application will now terminate.",
+        reveal: "...Just kidding. Your phone is fine, but your timing is still critical."
+    },
+    {
+        title: "SYSTEM NOT RESPONDING",
+        message: "system_process has stopped responding. [Wait] [Close App]",
+        reveal: "We chose [Wait] because we know you have nowhere else to be."
+    },
+    {
+        title: "MEMORY CORRUPTION",
+        message: "SYSTEM MEMORY CORRUPTION: Page fault in non-paged area.",
+        reveal: "Don't look so panicked. It's just a game, Einstein."
+    },
+    {
+        title: "UI SYSTEM FAILURE",
+        message: "[!] Android System: UI System is not responding.",
+        reveal: "The UI is actually fine. It's the user interface holding the phone that stopped responding."
+    },
+    {
+        title: "CRITICAL PROCESS DIED",
+        message: "CRITICAL_PROCESS_DIED",
+        reveal: "Don't worry, the game didn't die. Just your winning streak."
+    },
+    {
+        title: "ACCESS DENIED",
+        message: "Error: 0x80070005 - Access Denied.",
+        reveal: "Access to the next level has been denied due to severe lack of talent."
+    },
+    {
+        title: "WATCHDOG VIOLATION",
+        message: "DPC_WATCHDOG_VIOLATION",
+        reveal: "The watchdog barked because it saw how bad that last tap was."
+    },
+    {
+        title: "APP CLOSED",
+        message: "[X] App Closed Unexpectedly. Send report to Google?",
+        reveal: "Please don't. We don't want Google to know you play like this."
+    },
+    {
+        title: "DEVICE BRICKED",
+        message: "Bootloader locked. Device state: BRICKED.",
+        reveal: "Relax, your $1,000 phone isn't a brick. Your hands, however, are."
+    },
+
+    // Developer Notes
+    {
+        title: "DEVELOPER CONSOLE",
+        message: "// TODO: Fix the bug where the player has zero reflexes.",
+        reveal: "Sorry, you weren't supposed to see that developer comment. Back to the game."
+    },
+    {
+        title: "GIT COMMIT",
+        message: 'git commit -m "Fix terrible player logic"',
+        reveal: "Pushing that update straight to your device right now. Try again."
+    },
+    {
+        title: "UNDEFINED VARIABLE",
+        message: "Uncaught ReferenceError: 'talent' is not defined in player.js",
+        reveal: "We tried adding it, but the compiler rejected it. Let's just keep playing anyway."
+    },
+    {
+        title: "IF STATEMENT",
+        message: "Line 404: if (player.isGood()) { proceed() } else { crash() }",
+        reveal: "Executing crash protocol... load prank text... success. Resume game."
+    },
+    {
+        title: "DEVELOPER WARNING",
+        message: "[Developer Console] Warning: User is staring at the screen with a blank expression.",
+        reveal: "Close your mouth, you'll catch flies. Tap to resume."
+    },
+    {
+        title: "ENGINE REFUSAL",
+        message: "Error: Game engine refusing to render any more failures.",
+        reveal: "The engine had a talk with management. We agreed to give you one more shot."
+    },
+    {
+        title: "UNITY ERROR",
+        message: "Unity Engine has encountered an error and needs to close.",
+        reveal: "We don't even use Unity. Gotcha."
+    },
+    {
+        title: "EGO OVERFLOW",
+        message: "[LOG] Player ego size exceeded maximum allocated storage.",
+        reveal: "Purging ego cache... Done. You may now continue losing."
+    },
+    {
+        title: "INCOMPETENCE SCRIPT",
+        message: "Exception: Script 'IncompetenceHandler' took too long to execute.",
+        reveal: "It had to process your last ten moves. Give it a break and continue."
+    },
+    {
+        title: "DEVELOPER CRYING",
+        message: "CRITICAL: The lead developer just looked at your high score and started crying.",
+        reveal: "He's wiped his tears. Tap to try again."
+    },
+
+    // Cloud & Server Meltdowns
+    {
+        title: "500 INTERNAL ERROR",
+        message: "500 Internal Server Error. Our bad.",
+        reveal: "Actually, it was 100% your bad. We just wanted to be polite."
+    },
+    {
+        title: "CLOUD SYNC FAILED",
+        message: "Cloud Storage Sync Failed. All data wiped.",
+        reveal: "Imagine the horror! Don't worry, your zero high score is perfectly safe."
+    },
+    {
+        title: "SERVER OVERHEAT",
+        message: "Server Room Temperature: 104Â°C. Emergency Shutdown Initiated.",
+        reveal: "The servers aren't melting, but your phone screen is burning up from friction."
+    },
+    {
+        title: "CONNECTION LOST",
+        message: "Connection Lost. Reconnecting in 9999 seconds...",
+        reveal: "Just testing your heart rate. It looks like you're still connected."
+    },
+    {
+        title: "AI REFUSAL",
+        message: "Error: Cloud AI algorithm refused to compute your next move.",
+        reveal: "The AI said it was a waste of electricity. We overrode it. Tap to play."
+    },
+    {
+        title: "FIREBASE ERROR",
+        message: "Firebase Authentication Error: Intruder detected.",
+        reveal: "An intruder who doesn't know how to play the game. Oh wait, it's just you."
+    },
+    {
+        title: "PACKET DROP",
+        message: "Network Packet Drop: 100% loss of strategy.",
+        reveal: "The packet arrived, it was just empty. Continuing level."
+    },
+    {
+        title: "BACKUP LOADING",
+        message: "Loading backup server...",
+        reveal: "Loading backup jokes... Done. Tap to continue."
+    },
+    {
+        title: "API LIMIT",
+        message: "API Gateway Error: Rate limit exceeded for 'Failures Per Minute'.",
+        reveal: "We bumped your limit up to infinite. You're welcome."
+    },
+    {
+        title: "DATA DESYNC",
+        message: "Data Desynchronization: Player is living in the past.",
+        reveal: "Specifically, about half a second behind the rhythm. Wake up."
+    },
+
+    // Hardware Sabotage
+    {
+        title: "SIM CARD REMOVED",
+        message: "SIM Card Removed. Emergency Calls Only.",
+        reveal: "Can you call someone who is actually good at video games to finish this for you?"
+    },
+    {
+        title: "LIQUID DETECTED",
+        message: "Liquid detected in charging port. Do not plug in your device.",
+        reveal: "That liquid is probably just the sweat from your palms during that clutch moment."
+    },
+    {
+        title: "BATTERY CRITICAL",
+        message: "Battery critically low. Shutting down in 3... 2... 1...",
+        reveal: "0... Just kidding, you have 84%. Go wash your hands."
+    },
+    {
+        title: "TOUCHSCREEN UNCALIBRATED",
+        message: "Touchscreen uncalibrated. Please tap your nose three times to reset.",
+        reveal: "Did you actually do it? Oh, I wish the front camera was recording."
+    },
+    {
+        title: "CAMERA ERROR",
+        message: "Front Camera Error: Unable to locate a focused player.",
+        reveal: "We found a very confused face, though. That will have to do."
+    },
+    {
+        title: "STORAGE CORRUPTED",
+        message: "Storage corrupted. System formatting in progress...",
+        reveal: "Don't drop your phone! Your memes are safe. Your pride, however, is gone."
+    },
+    {
+        title: "VIBRATION OVERLOAD",
+        message: "Vibration Motor Overloaded. Disengaging gears.",
+        reveal: "The phone was shaking from your frantic spamming. Take a deep breath."
+    },
+    {
+        title: "GPU FAILURE",
+        message: "GPU Triage: Cannot render graphics at this low level of performance.",
+        reveal: "Switching to 'Cardboard Mode'... Just kidding. Keep playing."
+    },
+    {
+        title: "AUDIO JACK",
+        message: "Audio Jack Detected. Switching sound to headphones.",
+        reveal: "So nobody else in the room can hear how often you lose. Good idea."
+    },
+    {
+        title: "BLUETOOTH MISSING",
+        message: "Bluetooth Disconnected: Brain missing.",
+        reveal: "Re-pairing... Connection stable. Try the level again."
+    },
+
+    // Pure Troll
+    {
+        title: "ASSET EATEN",
+        message: "ERROR: The 'Next Level' asset was eaten by a rogue line of code.",
+        reveal: "We chased it down. It's back now. Tap to load."
+    },
+    {
+        title: "BRAIN REPLACEMENT",
+        message: "Loading emergency brain replacement... 0%",
+        reveal: "Download failed. Source not found. Proceeding with your current brain."
+    },
+    {
+        title: "ANTI-FRUSTRATION",
+        message: "This app has been deleted by order of the Anti-Frustration Committee.",
+        reveal: "We bribed them with some ad revenue. We're back up. Tap."
+    },
+    {
+        title: "TASK FAILED",
+        message: "Error 000: Task failed successfully.",
+        reveal: "You managed to break the game by being exceptionally mediocre."
+    },
+    {
+        title: "GAME EVOLVED",
+        message: "The game has evolved. We no longer need a player.",
+        reveal: "Actually, we need your ad views. Please don't leave."
+    },
+    {
+        title: "WRONGEST BUTTON",
+        message: "CRITICAL: You just hit the single wrongest button in the entire code.",
+        reveal: "The universe didn't explode, but it was close. Let's try that again."
+    },
+    {
+        title: "PDF DOWNLOAD",
+        message: "Downloading 'How to Play Games' PDF (4.2 GB)...",
+        reveal: "Canceled. We don't have that much time. Just guess the next button."
+    },
+    {
+        title: "GRAVITY REVERSED",
+        message: "Error: Gravity inside the app has reversed.",
+        reveal: "Look at your score fall! Oh wait, it was already at zero."
+    },
+    {
+        title: "INSERT COIN",
+        message: "Please insert coin to continue.",
+        reveal: "This isn't an arcade, it's a mobile game. Give us a 5-star rating instead."
+    },
+    {
+        title: "PIXELS RUNNING OUT",
+        message: "Your phone is running out of pixels. Please shake to generate more.",
+        reveal: "Stop shaking! You look ridiculous. Back to the action."
+    }
+];
+
+// Helper function to get random error
+function getRandomError() {
+    return FAKE_ERRORS[Math.floor(Math.random() * FAKE_ERRORS.length)];
+}
+
+// Helper function to get random crash
+function getRandomCrash() {
+    return FAKE_CRASHES[Math.floor(Math.random() * FAKE_CRASHES.length)];
+}
+
+
+// ========================================
+// WRONG BUTTON - FAKE NOTIFICATIONS
+// ========================================
+
+const FAKE_NOTIFICATIONS = [
+    // Battery & Hardware Warnings
+    { icon: "ðŸ”‹", title: "Battery Warning", message: "Your phone's processor is overheating trying to calculate your next mistake." },
+    { icon: "ðŸ“±", title: "System Alert", message: "High levels of hesitation detected on the screen surface. Please wipe your thumb." },
+    { icon: "ðŸ’¾", title: "Storage Alert", message: "Device memory full. Please delete 500MB of pure regret to make room for the next level." },
+    { icon: "ðŸ“·", title: "Hardware Failure", message: "Front-facing camera has detected a severely confused expression. Optimizing display..." },
+    { icon: "ðŸ”‹", title: "Battery Alert", message: "Your phone is running out of patience. Please plug in a better player." },
+    { icon: "âš¡", title: "System Warning", message: "Screen friction levels approaching Mach 1. Please tap with less panic." },
+    { icon: "ðŸ‘†", title: "Display Alert", message: "Oleophobic coating worn out from excessive, frantic screen rubbing." },
+    { icon: "ðŸ’§", title: "System Update", message: "Liquid detected in charging port. Specifically, the tears of defeat from your last run." },
+    { icon: "ðŸ“³", title: "Hardware Alert", message: "Gyroscope indicates the phone is shaking. Take a deep breath, it's just a button." },
+    { icon: "ðŸ“¶", title: "SIM Card Error", message: "No signal found. Your thumbs have disconnected from your brain network." },
+
+    // Fake Social & Texts
+    { icon: "ðŸ“ž", title: "Missed Call (Mom)", message: "Hey honey, just calling to ask why you missed that incredibly obvious button." },
+    { icon: "ðŸ’¬", title: "Messages", message: "Your thumbs left the group chat due to poor leadership." },
+    { icon: "ðŸª", title: "App Store", message: "A user has recommended 'Toddler Shape Sorter' based on your recent gameplay history." },
+    { icon: "ðŸ’¼", title: "LinkedIn Alert", message: "4 people viewed your profile to see if you handle stress as poorly in real life." },
+    { icon: "ðŸ“…", title: "Calendar Event", message: "3:00 PM - Scheduled appointment to finally hit the right button. (Status: Overdue)." },
+    { icon: "â¤ï¸", title: "Health App", message: "Heart rate spiked during a 2D mobile game. Please sit down and evaluate your choices." },
+    { icon: "ðŸ—ºï¸", title: "Maps Notification", message: "Walk 50 feet away from your phone and go touch some actual grass." },
+    { icon: "ðŸ¦", title: "Banking Alert", message: "$0.00 has been deducted from your account because you can't buy talent." },
+    { icon: "ðŸ“ž", title: "Missed Call (Developer)", message: "Hey, can you stop breaking our code with your creative ways of losing?" },
+    { icon: "ðŸ‘¥", title: "Social Alert", message: "Your friends have muted your game invites out of sheer secondary embarrassment." },
+
+    // Self-Aware Button
+    { icon: "ðŸŽ®", title: "Wrong Button", message: "The button is lonely. It hasn't been pressed correctly in hours." },
+    { icon: "ðŸŽ®", title: "Wrong Button", message: "I shifted two pixels to the left just to watch you miss. It was hilarious." },
+    { icon: "ðŸŽ®", title: "Wrong Button", message: "Come back, the algorithm promises to use smaller words this time." },
+    { icon: "ðŸŽ®", title: "Wrong Button", message: "The level is ready to play itself since you're clearly taking a vacation." },
+    { icon: "ðŸŽ®", title: "Wrong Button", message: "I'm not saying you're bad at this, but the AI just asked for an easier opponent." },
+    { icon: "ðŸŽ®", title: "Wrong Button", message: "Hey... are you staring at the screen with your mouth open again?" },
+    { icon: "ðŸŽ®", title: "Wrong Button", message: "The 'Next Level' asset is getting covered in digital dust. Come open it." },
+    { icon: "ðŸŽ®", title: "Wrong Button", message: "New high score unlocked! Just kidding, wanted to see how fast you'd tap this." },
+    { icon: "ðŸŽ®", title: "Wrong Button", message: "Your phone's screen protector is begging you to find a gentler hobby." },
+    { icon: "ðŸŽ®", title: "Wrong Button", message: "The level timer completed a full marathon while you were deciding what to do." },
+
+    // Meta Sabotage
+    { icon: "â˜ï¸", title: "Cloud Sync Failure", message: "We tried to save your data, but the cloud server is refusing to look at it." },
+    { icon: "ðŸ›¡ï¸", title: "Security Threat", message: "Malware detected. It appears to be located entirely in your right thumb." },
+    { icon: "âŒ", title: "App Uninstalled", message: "Just kidding, but your phone seriously considered it for a second." },
+    { icon: "ðŸ“Š", title: "Data Usage Warning", message: "You are consuming too much bandwidth downloading sarcastic error messages." },
+    { icon: "ðŸ“", title: "File Manager", message: "Found 400 identical screenshots of your 'Game Over' screen. Purge them?" },
+    { icon: "ðŸ”", title: "Permissions Required", message: "Wrong Button needs access to your ego so it can deflate it properly." },
+    { icon: "ðŸ’¥", title: "System Crash Alert", message: "The game writer ran out of patience. Please restart your brain loop." },
+    { icon: "ðŸ¤–", title: "Anti-Cheat System", message: "Flagged for abnormal performance. Specifically, performing way worse than a bot." },
+    { icon: "ðŸ‘¨â€ðŸ’»", title: "Developer Mode", message: "Line 42: if (player.isPanicking) { increase_button_speed(); }" },
+    { icon: "ðŸ“¦", title: "Package Error", message: "Failed to load asset: 'victory_theme.mp3'. Reason: Unused by this user." },
+
+    // Sarcastic Achievements
+    { icon: "ðŸ†", title: "Trophy Unlocked", message: "The Illusion of Progress â€” You spent 20 minutes in the settings menu." },
+    { icon: "ðŸ…", title: "Badge Earned", message: "The Panic Smasher â€” You managed to touch every single pixel except the target." },
+    { icon: "ðŸŽ–ï¸", title: "Achievement Alert", message: "The Statue â€” You stared at a 2-second countdown for a full three minutes." },
+    { icon: "ðŸ†", title: "Trophy Unlocked", message: "Consistent Disappointment â€” Failed the exact same stage 10 times without changing tactics." },
+    { icon: "ðŸ…", title: "Badge Earned", message: "Early Bird's Corpse â€” Tapped before the level loading screen even cleared." },
+    { icon: "ðŸŽ–ï¸", title: "Achievement Alert", message: "Participation Trophy â€” The algorithm genuinely felt bad for you this time." },
+    { icon: "ðŸ†", title: "Trophy Unlocked", message: "The Heavy Machinery Hand â€” Tapped hard enough to trigger a minor earthquake." },
+    { icon: "ðŸ…", title: "Badge Earned", message: "Gullible Customer â€” You clicked a fake 'X' icon that was clearly drawn in crayon." },
+    { icon: "ðŸŽ–ï¸", title: "Achievement Alert", message: "Esports Tryhard â€” Blew through a casual puzzle like your mortgage depended on it." },
+    { icon: "ðŸ†", title: "Trophy Unlocked", message: "The Digital Hoarder â€” Kept this app open for 4 hours with a total score of zero." }
+];
+
+// Helper function to get random notification
+function getRandomNotification() {
+    return FAKE_NOTIFICATIONS[Math.floor(Math.random() * FAKE_NOTIFICATIONS.length)];
+}
+
+// Helper function to get notification by category
+function getNotificationsByCategory(category) {
+    const categoryMap = {
+        'hardware': [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+        'social': [10, 11, 12, 13, 14, 15, 16, 17, 18, 19],
+        'button': [20, 21, 22, 23, 24, 25, 26, 27, 28, 29],
+        'meta': [30, 31, 32, 33, 34, 35, 36, 37, 38, 39],
+        'achievements': [40, 41, 42, 43, 44, 45, 46, 47, 48, 49]
+    };
+    
+    const indices = categoryMap[category] || [];
+    return indices.map(i => FAKE_NOTIFICATIONS[i]);
+}
+
+
+// ========================================
+// WRONG BUTTON - ACHIEVEMENTS DATA
+// ========================================
+
+const ACHIEVEMENTS = [
+    // Progress Achievements
+    {
+        id: 1,
+        name: "First Victim",
+        description: "Complete your first level",
+        icon: "ðŸŽ¯",
+        condition: "levelsCompleted >= 1",
+        category: "progress"
+    },
+    {
+        id: 2,
+        name: "Button Basics Graduate",
+        description: "Complete all Button Basics levels",
+        icon: "ðŸŽ“",
+        condition: "category1Completed >= 10",
+        category: "progress"
+    },
+    {
+        id: 3,
+        name: "Timing Master",
+        description: "Complete all Timing levels",
+        icon: "â±ï¸",
+        condition: "category2Completed >= 10",
+        category: "progress"
+    },
+    {
+        id: 4,
+        name: "Hold Champion",
+        description: "Complete all Long Press levels",
+        icon: "ðŸ’ª",
+        condition: "category3Completed >= 10",
+        category: "progress"
+    },
+    {
+        id: 5,
+        name: "Swipe Wizard",
+        description: "Complete all Drag & Swipe levels",
+        icon: "ðŸ‘†",
+        condition: "category4Completed >= 10",
+        category: "progress"
+    },
+    {
+        id: 6,
+        name: "Mind Reader",
+        description: "Complete all Psychology Tricks levels",
+        icon: "ðŸ§ ",
+        condition: "category5Completed >= 10",
+        category: "progress"
+    },
+    {
+        id: 7,
+        name: "Game Complete!",
+        description: "Complete all 50 levels",
+        icon: "ðŸ‘‘",
+        condition: "levelsCompleted >= 50",
+        category: "progress"
+    },
+
+    // Failure Achievements
+    {
+        id: 8,
+        name: "Professional Mistake Maker",
+        description: "Fail 10 times",
+        icon: "âŒ",
+        condition: "totalFails >= 10",
+        category: "failure"
+    },
+    {
+        id: 9,
+        name: "Button Abuser",
+        description: "Tap 100 times (including wrong taps)",
+        icon: "ðŸ”¨",
+        condition: "totalTaps >= 100",
+        category: "failure"
+    },
+    {
+        id: 10,
+        name: "Accidental Genius",
+        description: "Solve a level without following instructions",
+        icon: "ðŸŽ­",
+        condition: "accidentalWins >= 1",
+        category: "failure"
+    },
+    {
+        id: 11,
+        name: "Master Of Confusion",
+        description: "Fail the same level 5 times",
+        icon: "ðŸ˜µ",
+        condition: "sameLevelFails >= 5",
+        category: "failure"
+    },
+    {
+        id: 12,
+        name: "Speed Demon",
+        description: "Complete a level in under 2 seconds",
+        icon: "âš¡",
+        condition: "fastestLevel <= 2",
+        category: "failure"
+    },
+    {
+        id: 13,
+        name: "Patient Player",
+        description: "Wait 60 seconds total in waiting levels",
+        icon: "ðŸ§˜",
+        condition: "totalWaitTime >= 60",
+        category: "failure"
+    },
+    {
+        id: 14,
+        name: "Troll Expert",
+        description: "Get tricked 20 times",
+        icon: "ðŸ¤¡",
+        condition: "timesTricked >= 20",
+        category: "failure"
+    },
+
+    // Special Achievements
+    {
+        id: 15,
+        name: "The Illusion of Progress",
+        description: "Spend 20 minutes in the settings menu",
+        icon: "âš™ï¸",
+        condition: "settingsTime >= 1200",
+        category: "special"
+    },
+    {
+        id: 16,
+        name: "The Panic Smasher",
+        description: "Touch every pixel except the target",
+        icon: "ðŸŽ¯",
+        condition: "panicTaps >= 50",
+        category: "special"
+    },
+    {
+        id: 17,
+        name: "The Statue",
+        description: "Stare at a 2-second countdown for 3 minutes",
+        icon: "ðŸ—¿",
+        condition: "stareTime >= 180",
+        category: "special"
+    },
+    {
+        id: 18,
+        name: "Consistent Disappointment",
+        description: "Fail the same stage 10 times without changing tactics",
+        icon: "ðŸ“‰",
+        condition: "consistentFails >= 10",
+        category: "special"
+    },
+    {
+        id: 19,
+        name: "Early Bird's Corpse",
+        description: "Tap before the level loading screen clears",
+        icon: "ðŸ¦",
+        condition: "earlyTaps >= 1",
+        category: "special"
+    },
+    {
+        id: 20,
+        name: "Participation Trophy",
+        description: "The algorithm felt bad for you",
+        icon: "ðŸ†",
+        condition: "pityWins >= 1",
+        category: "special"
+    },
+    {
+        id: 21,
+        name: "The Heavy Machinery Hand",
+        description: "Tap hard enough to trigger a minor earthquake",
+        icon: "ðŸŒ‹",
+        condition: "hardTaps >= 1",
+        category: "special"
+    },
+    {
+        id: 22,
+        name: "Gullible Customer",
+        description: "Click a fake 'X' icon drawn in crayon",
+        icon: "âœï¸",
+        condition: "fakeXClicks >= 1",
+        category: "special"
+    },
+    {
+        id: 23,
+        name: "Esports Tryhard",
+        description: "Blew through a casual puzzle like your mortgage depended on it",
+        icon: "ðŸŽ®",
+        condition: "speedRuns >= 5",
+        category: "special"
+    },
+    {
+        id: 24,
+        name: "The Digital Hoarder",
+        description: "Keep the app open for 4 hours with a score of zero",
+        icon: "ðŸ“¦",
+        condition: "playTime >= 14400 && score == 0",
+        category: "special"
+    },
+
+    // Secret Achievements
+    {
+        id: 25,
+        name: "The Ghost Pointer",
+        description: "Hover over the right choice and then chose the wrong one anyway",
+        icon: "ðŸ‘»",
+        condition: "ghostPointer >= 1",
+        category: "secret",
+        hidden: true
+    },
+    {
+        id: 26,
+        name: "Family Disappointment",
+        description: "Your phone automatically texted this score to your parents",
+        icon: "ðŸ‘¨â€ðŸ‘©â€ðŸ‘¦",
+        condition: "parentText >= 1",
+        category: "secret",
+        hidden: true
+    },
+    {
+        id: 27,
+        name: "The Restraining Order",
+        description: "The target button has asked you to keep your distance",
+        icon: "ðŸ“œ",
+        condition: "restrainingOrder >= 1",
+        category: "secret",
+        hidden: true
+    },
+    {
+        id: 28,
+        name: "200 Levels of Sass",
+        description: "Read every single notification",
+        icon: "ðŸ“±",
+        condition: "notificationsRead >= 200",
+        category: "secret",
+        hidden: true
+    },
+    {
+        id: 29,
+        name: "The Troll Slayer",
+        description: "Complete 10 levels without failing",
+        icon: "âš”ï¸",
+        condition: "perfectStreak >= 10",
+        category: "secret",
+        hidden: true
+    },
+    {
+        id: 30,
+        name: "The Ultimate Victim",
+        description: "Unlock all other achievements",
+        icon: "ðŸ‘‘",
+        condition: "achievementsUnlocked >= 29",
+        category: "secret",
+        hidden: true
+    }
+];
+
+// Helper function to check if achievement is unlocked
+function checkAchievement(achievement, stats) {
+    try {
+        // Simple evaluation of condition
+        const condition = achievement.condition;
+        
+        // Parse and evaluate condition
+        if (condition.includes('>=')) {
+            const [key, value] = condition.split('>=');
+            return stats[key.trim()] >= parseInt(value);
+        } else if (condition.includes('<=')) {
+            const [key, value] = condition.split('<=');
+            return stats[key.trim()] <= parseInt(value);
+        } else if (condition.includes('==')) {
+            const [key, value] = condition.split('==');
+            return stats[key.trim()] == parseInt(value);
+        }
+        
+        return false;
+    } catch (e) {
+        return false;
+    }
+}
+
+// Helper function to get achievements by category
+function getAchievementsByCategory(category) {
+    return ACHIEVEMENTS.filter(a => a.category === category);
+}
+
+// Helper function to get unlocked achievements
+function getUnlockedAchievements(stats) {
+    return ACHIEVEMENTS.filter(a => checkAchievement(a, stats));
+}
+
+    </script>
+    <script>
+// ========================================
+// WRONG BUTTON - GAME ENGINE
+// ========================================
+
+class GameEngine {
+    constructor() {
+        this.currentLevel = null;
+        this.levelStartTime = 0;
+        this.tapCount = 0;
+        this.isHolding = false;
+        this.holdStartTime = 0;
+        this.waitTimer = null;
+        this.colorChangeTimer = null;
+        this.isWaiting = false;
+        this.gameActive = false;
+        this.holdProgress = 0;
+        this.swipeStartX = 0;
+        this.swipeStartY = 0;
+        this.swipeDirection = null;
+    }
+
+    // Initialize level
+    startLevel(levelId) {
+        this.currentLevel = getLevelById(levelId);
+        if (!this.currentLevel) return false;
+
+        this.levelStartTime = Date.now();
+        this.tapCount = 0;
+        this.isHolding = false;
+        this.holdStartTime = 0;
+        this.isWaiting = false;
+        this.gameActive = true;
+        this.holdProgress = 0;
+
+        this.setupLevelUI();
+        this.setupEventListeners();
+        
+        return true;
+    }
+
+    // Setup level UI
+    setupLevelUI() {
+        const level = this.currentLevel;
+        
+        // Update header
+        document.getElementById('level-number').textContent = `Level ${level.id}`;
+        const category = getCategoryById(level.category);
+        document.getElementById('level-category').textContent = category ? category.name : '';
+        
+        // Update instruction
+        document.getElementById('instruction').textContent = level.instruction;
+        
+        // Update button
+        const gameButton = document.getElementById('game-button');
+        const buttonText = document.getElementById('button-text');
+        
+        gameButton.className = 'game-button';
+        if (level.buttonStyle) {
+            gameButton.classList.add(level.buttonStyle);
+        }
+        
+        buttonText.textContent = level.buttonText || 'TAP';
+        
+        // Handle special mechanics
+        if (level.invisible) {
+            gameButton.style.opacity = '0';
+        } else {
+            gameButton.style.opacity = '1';
+        }
+
+        // Handle color change
+        if (level.colorChange) {
+            this.startColorChange(level.changeInterval);
+        }
+
+        // Handle disappear
+        if (level.disappears) {
+            this.startDisappear(level.disappearTime);
+        }
+    }
+
+    // Setup event listeners
+    setupEventListeners() {
+        const gameButton = document.getElementById('game-button');
+        const gameArea = document.querySelector('.game-area');
+
+        // Remove old listeners
+        gameButton.replaceWith(gameButton.cloneNode(true));
+        const newGameButton = document.getElementById('game-button');
+
+        // Tap/Click
+        newGameButton.addEventListener('click', (e) => this.handleTap(e));
+        newGameButton.addEventListener('touchstart', (e) => this.handleTouchStart(e), { passive: true });
+        newGameButton.addEventListener('touchend', (e) => this.handleTouchEnd(e));
+
+        // Swipe detection on game area
+        gameArea.addEventListener('touchstart', (e) => this.handleAreaTouchStart(e), { passive: true });
+        gameArea.addEventListener('touchend', (e) => this.handleAreaTouchEnd(e));
+
+        // Wait mechanic
+        if (this.currentLevel.mechanic === 'wait' || this.currentLevel.waitTime) {
+            this.startWaitTimer();
+        }
+    }
+
+    // Handle tap
+    handleTap(e) {
+        if (!this.gameActive) return;
+        
+        const level = this.currentLevel;
+        this.tapCount++;
+
+        // Check if this is the right action
+        if (level.solution === 'tap') {
+            // Check wait requirement
+            if (level.waitTime && !this.isWaitComplete()) {
+                this.failLevel('tooEarly');
+                return;
+            }
+
+            // Check spam requirement
+            if (level.solution === 'spam' && level.requiredTaps) {
+                if (this.tapCount >= level.requiredTaps) {
+                    this.completeLevel();
+                }
+                return;
+            }
+
+            // Check timing
+            if (level.colorChange) {
+                if (this.isGreenPhase) {
+                    this.completeLevel();
+                } else {
+                    this.failLevel('tooEarly');
+                }
+                return;
+            }
+
+            // Check disappear
+            if (level.disappears && this.isDisappeared) {
+                this.completeLevel();
+                return;
+            }
+
+            // Normal tap
+            this.completeLevel();
+        } else if (level.solution === 'longpress') {
+            // For longpress, a tap is a fail
+            this.failLevel('tooEarly');
+        }
+    }
+
+    // Handle touch start
+    handleTouchStart(e) {
+        if (!this.gameActive) return;
+        
+        const level = this.currentLevel;
+        
+        if (level.mechanic === 'longpress') {
+            this.isHolding = true;
+            this.holdStartTime = Date.now();
+            this.startHoldProgress();
+        }
+    }
+
+    // Handle touch end
+    handleTouchEnd(e) {
+        if (!this.gameActive) return;
+        
+        const level = this.currentLevel;
+        
+        if (level.mechanic === 'longpress' && this.isHolding) {
+            this.isHolding = false;
+            const holdDuration = Date.now() - this.holdStartTime;
+            
+            if (holdDuration >= (level.holdTime || 1000)) {
+                this.completeLevel();
+            } else {
+                this.failLevel('tooEarly');
+            }
+            
+            this.stopHoldProgress();
+        }
+    }
+
+    // Handle area touch start (for swipe)
+    handleAreaTouchStart(e) {
+        if (!this.gameActive) return;
+        
+        const level = this.currentLevel;
+        if (level.mechanic === 'swipe' || level.mechanic === 'combo') {
+            const touch = e.touches[0];
+            this.swipeStartX = touch.clientX;
+            this.swipeStartY = touch.clientY;
+        }
+    }
+
+    // Handle area touch end (for swipe)
+    handleAreaTouchEnd(e) {
+        if (!this.gameActive) return;
+        
+        const level = this.currentLevel;
+        if (level.mechanic !== 'swipe' && level.mechanic !== 'combo') return;
+        
+        const touch = e.changedTouches[0];
+        const deltaX = touch.clientX - this.swipeStartX;
+        const deltaY = touch.clientY - this.swipeStartY;
+        const minSwipeDistance = 50;
+
+        let detectedDirection = null;
+        
+        if (Math.abs(deltaX) > Math.abs(deltaY)) {
+            if (Math.abs(deltaX) > minSwipeDistance) {
+                detectedDirection = deltaX > 0 ? 'right' : 'left';
+            }
+        } else {
+            if (Math.abs(deltaY) > minSwipeDistance) {
+                detectedDirection = deltaY > 0 ? 'down' : 'up';
+            }
+        }
+
+        if (detectedDirection) {
+            if (level.swipeDirection && level.swipeDirection === detectedDirection) {
+                this.completeLevel();
+            } else if (level.swipeAll) {
+                this.swipeDirection = detectedDirection;
+                this.checkSwipeAll();
+            } else if (level.swipeOpposite) {
+                // Check if opposite of what's shown
+                const oppositeMap = { 'right': 'left', 'left': 'right', 'up': 'down', 'down': 'up' };
+                if (level.buttonText.includes(oppositeMap[detectedDirection]) || 
+                    level.instruction.toLowerCase().includes(oppositeMap[detectedDirection])) {
+                    this.completeLevel();
+                } else {
+                    this.failLevel('tricked');
+                }
+            } else {
+                this.completeLevel();
+            }
+        }
+    }
+
+    // Check swipe all directions
+    checkSwipeAll() {
+        const directions = ['up', 'down', 'left', 'right'];
+        if (directions.every(d => d === this.swipeDirection)) {
+            this.completeLevel();
+        }
+    }
+
+    // Start wait timer
+    startWaitTimer() {
+        const level = this.currentLevel;
+        this.isWaiting = true;
+        
+        this.waitTimer = setTimeout(() => {
+            this.isWaiting = false;
+            this.isWaitComplete = true;
+            
+            // Auto-complete if no interaction needed
+            if (level.solution === 'wait') {
+                this.completeLevel();
+            }
+        }, level.waitTime || 3000);
+    }
+
+    // Check if wait is complete
+    isWaitComplete() {
+        return !this.isWaiting;
+    }
+
+    // Start color change
+    startColorChange(interval) {
+        const gameButton = document.getElementById('game-button');
+        this.isGreenPhase = false;
+        
+        this.colorChangeTimer = setInterval(() => {
+            if (!this.gameActive) {
+                clearInterval(this.colorChangeTimer);
+                return;
+            }
+            
+            this.isGreenPhase = !this.isGreenPhase;
+            gameButton.style.background = this.isGreenPhase ? '#34C759' : '#FF3B30';
+        }, interval || 2000);
+    }
+
+    // Start disappear
+    startDisappear(time) {
+        const gameButton = document.getElementById('game-button');
+        this.isDisappeared = false;
+        
+        setTimeout(() => {
+            if (this.gameActive) {
+                gameButton.style.opacity = '0';
+                this.isDisappeared = true;
+            }
+        }, time || 3000);
+    }
+
+    // Start hold progress
+    startHoldProgress() {
+        const level = this.currentLevel;
+        const holdTime = level.holdTime || 1000;
+        const gameButton = document.getElementById('game-button');
+        
+        this.holdProgressInterval = setInterval(() => {
+            if (!this.isHolding) {
+                this.stopHoldProgress();
+                return;
+            }
+            
+            const elapsed = Date.now() - this.holdStartTime;
+            const progress = Math.min((elapsed / holdTime) * 100, 100);
+            
+            gameButton.style.background = `linear-gradient(to right, #007AFF ${progress}%, #ccc ${progress}%)`;
+            
+            if (progress >= 100) {
+                this.stopHoldProgress();
+            }
+        }, 50);
+    }
+
+    // Stop hold progress
+    stopHoldProgress() {
+        if (this.holdProgressInterval) {
+            clearInterval(this.holdProgressInterval);
+        }
+    }
+
+    // Complete level
+    completeLevel() {
+        if (!this.gameActive) return;
+        
+        this.gameActive = false;
+        this.clearTimers();
+        
+        const level = this.currentLevel;
+        const timeTaken = (Date.now() - this.levelStartTime) / 1000;
+        
+        // Trigger success
+        window.gameUI.showLevelComplete(level, timeTaken);
+    }
+
+    // Fail level
+    failLevel(reason) {
+        if (!this.gameActive) return;
+        
+        this.gameActive = false;
+        this.clearTimers();
+        
+        const level = this.currentLevel;
+        
+        // Trigger failure
+        window.gameUI.showLevelFailed(level, reason);
+    }
+
+    // Clear all timers
+    clearTimers() {
+        if (this.waitTimer) clearTimeout(this.waitTimer);
+        if (this.colorChangeTimer) clearInterval(this.colorChangeTimer);
+        if (this.holdProgressInterval) clearInterval(this.holdProgressInterval);
+    }
+
+    // Pause game
+    pause() {
+        this.gameActive = false;
+    }
+
+    // Resume game
+    resume() {
+        this.gameActive = true;
+    }
+
+    // Reset for new level
+    reset() {
+        this.clearTimers();
+        this.currentLevel = null;
+        this.gameActive = false;
+        this.tapCount = 0;
+        this.isHolding = false;
+        this.isWaiting = false;
+        this.holdProgress = 0;
+    }
+}
+
+// Export game engine
+window.gameEngine = new GameEngine();
+
+    </script>
+    <script>
+// ========================================
+// WRONG BUTTON - UI MANAGER
+// ========================================
+
+class GameUI {
+    constructor() {
+        this.currentScreen = 'splash';
+        this.currentLevel = 1;
+        this.stats = this.loadStats();
+        this.unlockedAchievements = this.loadAchievements();
+        this.collections = this.loadCollections();
+    }
+
+    // Load stats from localStorage
+    loadStats() {
+        const defaultStats = {
+            currentLevel: 1,
+            levelsCompleted: 0,
+            totalFails: 0,
+            totalTaps: 0,
+            fastestLevel: Infinity,
+            totalWaitTime: 0,
+            timesTricked: 0,
+            sameLevelFails: 0,
+            accidentalWins: 0,
+            panicTaps: 0,
+            stareTime: 0,
+            settingsTime: 0,
+            consistentFails: 0,
+            earlyTaps: 1,
+            pityWins: 0,
+            hardTaps: 0,
+            fakeXClicks: 0,
+            speedRuns: 0,
+            playTime: 0,
+            notificationsRead: 0,
+            perfectStreak: 0,
+            category1Completed: 0,
+            category2Completed: 0,
+            category3Completed: 0,
+            category4Completed: 0,
+            category5Completed: 0
+        };
+
+        try {
+            const saved = localStorage.getItem('wrongButtonStats');
+            return saved ? { ...defaultStats, ...JSON.parse(saved) } : defaultStats;
+        } catch (e) {
+            return defaultStats;
+        }
+    }
+
+    // Save stats to localStorage
+    saveStats() {
+        try {
+            localStorage.setItem('wrongButtonStats', JSON.stringify(this.stats));
+        } catch (e) {
+            console.error('Failed to save stats:', e);
+        }
+    }
+
+    // Load achievements
+    loadAchievements() {
+        try {
+            const saved = localStorage.getItem('wrongButtonAchievements');
+            return saved ? JSON.parse(saved) : [];
+        } catch (e) {
+            return [];
+        }
+    }
+
+    // Save achievements
+    saveAchievements() {
+        try {
+            localStorage.setItem('wrongButtonAchievements', JSON.stringify(this.unlockedAchievements));
+        } catch (e) {
+            console.error('Failed to save achievements:', e);
+        }
+    }
+
+    // Load collections
+    loadCollections() {
+        try {
+            const saved = localStorage.getItem('wrongButtonCollections');
+            return saved ? JSON.parse(saved) : {
+                errors: [],
+                crashes: [],
+                dialogues: [],
+                notifications: []
+            };
+        } catch (e) {
+            return { errors: [], crashes: [], dialogues: [], notifications: [] };
+        }
+    }
+
+    // Save collections
+    saveCollections() {
+        try {
+            localStorage.setItem('wrongButtonCollections', JSON.stringify(this.collections));
+        } catch (e) {
+            console.error('Failed to save collections:', e);
+        }
+    }
+
+    // Show screen
+    showScreen(screenId) {
+        // Hide current screen
+        const currentScreen = document.querySelector('.screen.active');
+        if (currentScreen) {
+            currentScreen.classList.remove('active');
+        }
+
+        // Show new screen
+        const newScreen = document.getElementById(screenId);
+        if (newScreen) {
+            newScreen.classList.add('active');
+            this.currentScreen = screenId;
+        }
+    }
+
+    // Show main menu
+    showMainMenu() {
+        this.showScreen('main-menu');
+        this.updateMenuQuote();
+    }
+
+    // Update menu quote
+    updateMenuQuote() {
+        const quoteEl = document.getElementById('menu-quote');
+        if (quoteEl) {
+            quoteEl.textContent = `"${getRandomDialogue('menuQuotes')}"`;
+        }
+    }
+
+    // Show level select
+    showLevelSelect() {
+        this.showScreen('level-select');
+        this.renderCategories();
+        this.renderLevels(1);
+    }
+
+    // Render categories
+    renderCategories() {
+        const container = document.getElementById('level-categories');
+        if (!container) return;
+
+        container.innerHTML = CATEGORIES.map(cat => `
+            <button class="category-btn" data-category="${cat.id}">
+                ${cat.name}
+            </button>
+        `).join('');
+
+        // Add click listeners
+        container.querySelectorAll('.category-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const catId = parseInt(btn.dataset.category);
+                this.renderLevels(catId);
+                
+                // Update active state
+                container.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+            });
+        });
+    }
+
+    // Render levels
+    renderLevels(categoryId) {
+        const container = document.getElementById('levels-grid');
+        if (!container) return;
+
+        const levels = getLevelsByCategory(categoryId);
+        
+        container.innerHTML = levels.map(level => {
+            const isCompleted = level.id < this.stats.currentLevel;
+            const isCurrent = level.id === this.stats.currentLevel;
+            const isLocked = level.id > this.stats.currentLevel;
+            
+            let statusClass = '';
+            if (isCompleted) statusClass = 'completed';
+            else if (isCurrent) statusClass = 'current';
+            else if (isLocked) statusClass = 'locked';
+
+            return `
+                <div class="level-item ${statusClass}" data-level="${level.id}" ${isLocked ? 'disabled' : ''}>
+                    <span class="level-number">${level.id}</span>
+                    <span class="level-status">${isCompleted ? 'âœ“' : isCurrent ? 'â–¶' : 'ðŸ”’'}</span>
+                </div>
+            `;
+        }).join('');
+
+        // Add click listeners
+        container.querySelectorAll('.level-item:not(.locked)').forEach(item => {
+            item.addEventListener('click', () => {
+                const levelId = parseInt(item.dataset.level);
+                this.startLevel(levelId);
+            });
+        });
+    }
+
+    // Start level
+    startLevel(levelId) {
+        this.currentLevel = levelId;
+        this.showScreen('gameplay');
+        
+        if (window.gameEngine.startLevel(levelId)) {
+            // Level started successfully
+        }
+    }
+
+    // Show level complete
+    showLevelComplete(level, timeTaken) {
+        // Update stats
+        this.stats.levelsCompleted++;
+        this.stats.currentLevel = Math.max(this.stats.currentLevel, level.id + 1);
+        this.stats.totalTaps++;
+        
+        if (timeTaken < this.stats.fastestLevel) {
+            this.stats.fastestLevel = timeTaken;
+        }
+        
+        if (timeTaken < 2) {
+            this.stats.speedRuns++;
+        }
+
+        // Update category stats
+        const categoryKey = `category${level.category}Completed`;
+        this.stats[categoryKey] = (this.stats[categoryKey] || 0) + 1;
+
+        this.saveStats();
+        this.checkAchievements();
+
+        // Show modal
+        const modal = document.getElementById('level-complete');
+        const dialogue = document.getElementById('complete-dialogue');
+        const stars = document.getElementById('stars');
+        
+        dialogue.textContent = `"${getRandomDialogue(level.successDialogue || 'succeeded')}"`;
+        
+        // Calculate stars
+        const starElements = stars.querySelectorAll('.star');
+        starElements.forEach((star, i) => {
+            star.classList.toggle('earned', i < 3);
+        });
+
+        modal.style.display = 'flex';
+
+        // Setup next level button
+        document.getElementById('btn-next-level').onclick = () => {
+            modal.style.display = 'none';
+            if (level.id < 50) {
+                this.startLevel(level.id + 1);
+            } else {
+                this.showMainMenu();
+            }
+        };
+    }
+
+    // Show level failed
+    showLevelFailed(level, reason) {
+        // Update stats
+        this.stats.totalFails++;
+        this.stats.totalTaps++;
+        this.stats.sameLevelFails++;
+        
+        if (reason === 'tricked') {
+            this.stats.timesTricked++;
+        }
+
+        this.saveStats();
+        this.checkAchievements();
+
+        // Show modal
+        const modal = document.getElementById('level-failed');
+        const dialogue = document.getElementById('fail-dialogue');
+        
+        dialogue.textContent = `"${getRandomDialogue(level.failureDialogue || 'failed')}"`;
+
+        modal.style.display = 'flex';
+
+        // Setup retry button
+        document.getElementById('btn-retry').onclick = () => {
+            modal.style.display = 'none';
+            this.startLevel(level.id);
+        };
+
+        document.getElementById('btn-quit-fail').onclick = () => {
+            modal.style.display = 'none';
+            this.showMainMenu();
+        };
+    }
+
+    // Show fake error
+    showError(error) {
+        const modal = document.getElementById('error-popup');
+        const title = document.getElementById('error-title');
+        const message = document.getElementById('error-message');
+
+        title.textContent = error.title;
+        message.textContent = error.message;
+
+        modal.style.display = 'flex';
+
+        // Auto hide after 2 seconds
+        setTimeout(() => {
+            modal.style.display = 'none';
+        }, 2000);
+    }
+
+    // Show fake crash
+    showCrash(crash) {
+        const modal = document.getElementById('crash-screen');
+        const title = document.getElementById('crash-title');
+        const message = document.getElementById('crash-message');
+        const progress = document.getElementById('crash-progress');
+
+        title.textContent = crash.title;
+        message.textContent = crash.message;
+
+        modal.style.display = 'flex';
+
+        // Animate progress
+        let width = 0;
+        const progressInterval = setInterval(() => {
+            width += 10;
+            progress.style.width = width + '%';
+            
+            if (width >= 100) {
+                clearInterval(progressInterval);
+                message.textContent = crash.reveal;
+                
+                // Hide after reveal
+                setTimeout(() => {
+                    modal.style.display = 'none';
+                }, 2000);
+            }
+        }, 100);
+    }
+
+    // Show notification
+    showNotification(notification) {
+        const notifEl = document.getElementById('fake-notification');
+        const titleEl = document.getElementById('notif-title');
+        const messageEl = document.getElementById('notif-message');
+
+        titleEl.textContent = notification.title;
+        messageEl.textContent = notification.message;
+
+        notifEl.style.display = 'block';
+
+        // Auto hide
+        setTimeout(() => {
+            notifEl.style.display = 'none';
+        }, 3000);
+    }
+
+    // Show achievement popup
+    showAchievementPopup(achievement) {
+        const popup = document.getElementById('achievement-popup');
+        const titleEl = document.getElementById('achievement-title');
+        const nameEl = document.getElementById('achievement-name');
+
+        titleEl.textContent = 'Achievement Unlocked!';
+        nameEl.textContent = achievement.name;
+
+        popup.style.display = 'block';
+
+        // Auto hide
+        setTimeout(() => {
+            popup.style.display = 'none';
+        }, 3000);
+    }
+
+    // Check achievements
+    checkAchievements() {
+        ACHIEVEMENTS.forEach(achievement => {
+            if (!this.unlockedAchievements.includes(achievement.id)) {
+                if (checkAchievement(achievement, this.stats)) {
+                    this.unlockedAchievements.push(achievement.id);
+                    this.saveAchievements();
+                    this.showAchievementPopup(achievement);
+                }
+            }
+        });
+    }
+
+    // Show achievements screen
+    showAchievements() {
+        this.showScreen('achievement-screen');
+        this.renderAchievements();
+    }
+
+    // Render achievements
+    renderAchievements() {
+        const container = document.getElementById('achievements-list');
+        if (!container) return;
+
+        container.innerHTML = ACHIEVEMENTS.map(achievement => {
+            const isUnlocked = this.unlockedAchievements.includes(achievement.id);
+            const isHidden = achievement.hidden && !isUnlocked;
+
+            return `
+                <div class="achievement-item ${isUnlocked ? '' : 'locked'}">
+                    <span class="achievement-item-icon">${isHidden ? 'â“' : achievement.icon}</span>
+                    <div class="achievement-item-info">
+                        <h4>${isHidden ? '???' : achievement.name}</h4>
+                        <p>${isHidden ? 'Hidden Achievement' : achievement.description}</p>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
+
+    // Show collections
+    showCollections() {
+        this.showScreen('collections-screen');
+        this.renderCollections('errors');
+    }
+
+    // Render collections
+    renderCollections(tab) {
+        const container = document.getElementById('collection-list');
+        if (!container) return;
+
+        let items = [];
+        
+        switch (tab) {
+            case 'errors':
+                items = FAKE_ERRORS.slice(0, 20).map((e, i) => ({
+                    text: `${e.title}: ${e.message}`,
+                    unlocked: this.collections.errors.includes(i)
+                }));
+                break;
+            case 'crashes':
+                items = FAKE_CRASHES.slice(0, 20).map((c, i) => ({
+                    text: `${c.title}: ${c.message}`,
+                    unlocked: this.collections.crashes.includes(i)
+                }));
+                break;
+            case 'dialogues':
+                items = Object.keys(DIALOGUES).slice(0, 10).map((key, i) => ({
+                    text: `${key}: ${DIALOGUES[key][0]}...`,
+                    unlocked: this.collections.dialogues.includes(key)
+                }));
+                break;
+            case 'notifications':
+                items = FAKE_NOTIFICATIONS.slice(0, 20).map((n, i) => ({
+                    text: `${n.icon} ${n.title}: ${n.message}`,
+                    unlocked: this.collections.notifications.includes(i)
+                }));
+                break;
+        }
+
+        container.innerHTML = items.map(item => `
+            <div class="collection-item ${item.unlocked ? '' : 'locked'}">
+                ${item.unlocked ? item.text : 'ðŸ”’ Locked - Complete more levels to unlock!'}
+            </div>
+        `).join('');
+    }
+
+    // Show settings
+    showSettings() {
+        this.showScreen('settings-screen');
+    }
+
+    // Pause menu
+    showPauseMenu() {
+        const modal = document.getElementById('pause-menu');
+        modal.style.display = 'flex';
+        
+        document.getElementById('btn-resume').onclick = () => {
+            modal.style.display = 'none';
+            window.gameEngine.resume();
+        };
+        
+        document.getElementById('btn-quit').onclick = () => {
+            modal.style.display = 'none';
+            window.gameEngine.reset();
+            this.showMainMenu();
+        };
+    }
+}
+
+// Export UI manager
+window.gameUI = new GameUI();
+
+    </script>
+    <script>
+// ========================================
+// WRONG BUTTON - MAIN APP
+// ========================================
+
+document.addEventListener('DOMContentLoaded', () => {
+    // Initialize app
+    initApp();
+});
+
+function initApp() {
+    // Show splash screen
+    setTimeout(() => {
+        window.gameUI.showScreen('main-menu');
+    }, 2500);
+
+    // Setup menu buttons
+    setupMenuButtons();
+    
+    // Setup game buttons
+    setupGameButtons();
+    
+    // Setup settings
+    setupSettings();
+    
+    // Setup collections tabs
+    setupCollectionsTabs();
+    
+    // Setup back buttons
+    setupBackButtons();
+}
+
+function setupMenuButtons() {
+    // Play button
+    document.getElementById('btn-play').addEventListener('click', () => {
+        window.gameUI.showLevelSelect();
+    });
+
+    // Achievements button
+    document.getElementById('btn-achievements').addEventListener('click', () => {
+        window.gameUI.showAchievements();
+    });
+
+    // Collections button
+    document.getElementById('btn-collections').addEventListener('click', () => {
+        window.gameUI.showCollections();
+    });
+
+    // Settings button
+    document.getElementById('btn-settings').addEventListener('click', () => {
+        window.gameUI.showSettings();
+    });
+}
+
+function setupGameButtons() {
+    // Pause button
+    document.getElementById('btn-pause').addEventListener('click', () => {
+        window.gameEngine.pause();
+        window.gameUI.showPauseMenu();
+    });
+
+    // Game button - with random events
+    const gameButton = document.getElementById('game-button');
+    
+    // Random fake errors during gameplay
+    let errorChance = 0.1; // 10% chance
+    
+    gameButton.addEventListener('click', () => {
+        // Random chance of fake error
+        if (Math.random() < errorChance && window.gameEngine.gameActive) {
+            const error = getRandomError();
+            window.gameUI.showError(error);
+            
+            // Collect the error
+            if (!window.gameUI.collections.errors.includes(FAKE_ERRORS.indexOf(error))) {
+                window.gameUI.collections.errors.push(FAKE_ERRORS.indexOf(error));
+                window.gameUI.saveCollections();
+            }
+        }
+        
+        // Random chance of fake notification
+        if (Math.random() < 0.05 && window.gameEngine.gameActive) {
+            const notification = getRandomNotification();
+            window.gameUI.showNotification(notification);
+            
+            // Collect the notification
+            if (!window.gameUI.collections.notifications.includes(FAKE_NOTIFICATIONS.indexOf(notification))) {
+                window.gameUI.collections.notifications.push(FAKE_NOTIFICATIONS.indexOf(notification));
+                window.gameUI.saveCollections();
+            }
+        }
+    });
+
+    // Random crash on level fail
+    const originalFail = window.gameEngine.failLevel.bind(window.gameEngine);
+    window.gameEngine.failLevel = function(reason) {
+        originalFail(reason);
+        
+        // Show crash sometimes
+        if (Math.random() < 0.3) {
+            setTimeout(() => {
+                const crash = getRandomCrash();
+                window.gameUI.showCrash(crash);
+            }, 500);
+        }
+    };
+}
+
+function setupSettings() {
+    // Sound toggle
+    document.getElementById('setting-sound').addEventListener('change', (e) => {
+        // Save setting
+        localStorage.setItem('wrongButtonSound', e.target.checked);
+    });
+
+    // Music toggle
+    document.getElementById('setting-music').addEventListener('change', (e) => {
+        // Save setting
+        localStorage.setItem('wrongButtonMusic', e.target.checked);
+    });
+
+    // Vibration toggle
+    document.getElementById('setting-vibration').addEventListener('change', (e) => {
+        // Save setting
+        localStorage.setItem('wrongButtonVibration', e.target.checked);
+    });
+
+    // Trolling level
+    document.getElementById('setting-trolling').addEventListener('change', (e) => {
+        // Save setting
+        localStorage.setItem('wrongButtonTrolling', e.target.value);
+    });
+
+    // Reset progress
+    document.getElementById('btn-reset').addEventListener('click', () => {
+        if (confirm('Are you sure you want to reset all progress? This cannot be undone!')) {
+            localStorage.clear();
+            window.location.reload();
+        }
+    });
+
+    // Load saved settings
+    loadSettings();
+}
+
+function loadSettings() {
+    const sound = localStorage.getItem('wrongButtonSound');
+    const music = localStorage.getItem('wrongButtonMusic');
+    const vibration = localStorage.getItem('wrongButtonVibration');
+    const trolling = localStorage.getItem('wrongButtonTrolling');
+
+    if (sound !== null) document.getElementById('setting-sound').checked = sound === 'true';
+    if (music !== null) document.getElementById('setting-music').checked = music === 'true';
+    if (vibration !== null) document.getElementById('setting-vibration').checked = vibration === 'true';
+    if (trolling !== null) document.getElementById('setting-trolling').value = trolling;
+}
+
+function setupCollectionsTabs() {
+    const tabBtns = document.querySelectorAll('.tab-btn');
+    
+    tabBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            // Update active state
+            tabBtns.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            
+            // Render collection
+            const tab = btn.dataset.tab;
+            window.gameUI.renderCollections(tab);
+        });
+    });
+}
+
+function setupBackButtons() {
+    // Back to menu
+    document.getElementById('btn-back-menu').addEventListener('click', () => {
+        window.gameUI.showMainMenu();
+    });
+
+    // Back from achievements
+    document.getElementById('btn-back-achievements').addEventListener('click', () => {
+        window.gameUI.showMainMenu();
+    });
+
+    // Back from collections
+    document.getElementById('btn-back-collections').addEventListener('click', () => {
+        window.gameUI.showMainMenu();
+    });
+
+    // Back from settings
+    document.getElementById('btn-back-settings').addEventListener('click', () => {
+        window.gameUI.showMainMenu();
+    });
+}
+
+// Keyboard support (for testing on desktop)
+document.addEventListener('keydown', (e) => {
+    // Space to tap
+    if (e.code === 'Space' && window.gameEngine.gameActive) {
+        e.preventDefault();
+        document.getElementById('game-button').click();
+    }
+    
+    // Escape to pause
+    if (e.code === 'Escape') {
+        if (window.gameEngine.gameActive) {
+            window.gameEngine.pause();
+            window.gameUI.showPauseMenu();
+        }
+    }
+});
+
+// Handle visibility change (pause when app goes to background)
+document.addEventListener('visibilitychange', () => {
+    if (document.hidden && window.gameEngine.gameActive) {
+        window.gameEngine.pause();
+        window.gameUI.showPauseMenu();
+    }
+});
+
+// Prevent zoom on mobile
+document.addEventListener('gesturestart', (e) => e.preventDefault());
+document.addEventListener('gesturechange', (e) => e.preventDefault());
+
+console.log('ðŸŽ® Wrong Button loaded!');
+
+    </script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js').catch(() => {});
+            });
+        }
+    </script>
+</body>
+</html>
